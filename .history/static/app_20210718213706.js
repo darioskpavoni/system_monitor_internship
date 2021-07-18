@@ -11,9 +11,8 @@ socket.on('message', (message) => {
 
 // We set up the button
 const sendBtn = document.querySelector('button');
-let inputMsg = '';
-sendBtn.addEventListener('click', () => {
-    inputMsg = document.querySelector('input').value;
+const inputMsg = document.querySelector('input').value;
+sendBtn.addEventListener('click', (inputMsg) => {
     socket.emit('message', inputMsg);
-    /* console.log(inputMsg); */
+    console.log(inputMsg);
 })

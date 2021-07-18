@@ -5,15 +5,14 @@ const socket = io('ws://localhost:3001');  // we use ws (WebSocket) here
 socket.on('message', (message) => {
     const msgElement = document.createElement('li');
     msgElement.innerHTML = message;
-    /* console.log(msgElement); */
+    console.log(msgElement)
     document.querySelector('ul').appendChild(msgElement);
 }) // we listen to the 'message' event EMITTED BY THE SERVER
 
 // We set up the button
 const sendBtn = document.querySelector('button');
-let inputMsg = '';
+const inputMsg = document.querySelector('input');
 sendBtn.addEventListener('click', () => {
-    inputMsg = document.querySelector('input').value;
     socket.emit('message', inputMsg);
-    /* console.log(inputMsg); */
+    /* console.log('message'); */
 })

@@ -1,16 +1,14 @@
 // This code is the BACK-END!
 
 // HTTP server with EXPRESS
-const { Socket } = require('dgram');
 const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
 
 const path = require('path');
-const publicPath = path.join(__dirname, '../views');
+const publicPath = path.join(__dirname, '../app');
 
-app.use("/static", express.static('../static/'));
 
 app.get('/', (req,res) => {
     res.sendFile(path.join(publicPath,'/index.html'));
@@ -22,12 +20,12 @@ const io = require('socket.io')(server, {
 });
 
 // Logic for socket.io -> we have an EVENT-BASED system
-io.on('connection', (socket) => {
+io.on('connection', () => {
     console.log('User connected');
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
-    })
+    } )
     
     // we can listen to any custom event we want. For simplicity, we call it the 'message' event
     socket.on('message', (message) => {

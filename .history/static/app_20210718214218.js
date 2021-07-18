@@ -15,5 +15,5 @@ let inputMsg = '';
 sendBtn.addEventListener('click', () => {
     inputMsg = document.querySelector('input').value;
     socket.emit('message', inputMsg);
-    /* console.log(inputMsg); */
+    console.log(inputMsg);
 })
