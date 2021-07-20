@@ -25,9 +25,9 @@ const io = require('socket.io')(server, {
 io.on('connection', (socket) => {
     console.log('User connected');
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (socket) => {
         let disconnectedUserId = socket.id;
-        console.log(`User ${disconnectedUserId} disconnected`);
+        console.log(`User ${disconnectedUserId.substr(0,2)} disconnected`);
         io.emit('disconnectedUser', disconnectedUserId);
     })
     

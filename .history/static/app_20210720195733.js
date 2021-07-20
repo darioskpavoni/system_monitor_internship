@@ -26,9 +26,9 @@ socket.on('cpuUsage', (package) => {
 })
 
 // Deleting row with CPU usage on disconnection
-socket.on('disconnectedUser', (disconnectedUserId) => {
-    let el = document.getElementById(disconnectedUserId);
-    el.remove();
+socket.on('disconnection', () => {
+    let el = document.getElementById(socket.id);
+    delete el;
 })
 
 // We set up the button

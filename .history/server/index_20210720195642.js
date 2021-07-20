@@ -26,9 +26,8 @@ io.on('connection', (socket) => {
     console.log('User connected');
 
     socket.on('disconnect', () => {
-        let disconnectedUserId = socket.id;
-        console.log(`User ${disconnectedUserId} disconnected`);
-        io.emit('disconnectedUser', disconnectedUserId);
+        console.log('User disconnected');
+        io.emit('disconnected');
     })
     
     // we can listen to any custom event we want. For simplicity, we call it the 'message' event
