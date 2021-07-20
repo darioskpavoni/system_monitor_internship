@@ -36,12 +36,6 @@ io.on('connection', (socket) => {
         io.emit('message', `${socket.id.substr(0,2)} said ${message}`);
     });
 
-    // getting cpuUsage from client side
-    socket.on('cpuUsage', (package) => {
-        console.log(`${package.id.substr(0,2)} said ${package.value}`);
-        io.emit('cpuUsage', package);
-    })
-
 });
 
 // Final part, telling our server to listen on port 3001

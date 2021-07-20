@@ -38,8 +38,8 @@ io.on('connection', (socket) => {
 
     // getting cpuUsage from client side
     socket.on('cpuUsage', (package) => {
-        console.log(`${package.id.substr(0,2)} said ${package.value}`);
-        io.emit('cpuUsage', package);
+        console.log(`${socket.id.substr(0,2)} said ${cpuUsage}`);
+        io.emit('cpuUsage', cpuUsage);
     })
 
 });

@@ -42,7 +42,7 @@ setInterval(() => {
     /* console.log(value); */ 
     let package = {
         value,
-        'id': socket.id
+        'id': `${socket.id}`
     };
     
     socket.emit('cpuUsage', package);

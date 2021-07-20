@@ -42,9 +42,8 @@ setInterval(() => {
     /* console.log(value); */ 
     let package = {
         value,
-        'id': socket.id
+        'socket-id': socket.id
     };
-    
     socket.emit('cpuUsage', package);
     console.log(`${socket.id} has ${value}%`);
 }, 2000);

@@ -1,3 +1,5 @@
+const { cpuUsage } = require("process");
+
 // The io object (the socket.io client library) is now globally available in the browser
 const socket = io('ws://localhost:3001');  // we use ws (WebSocket) here
 
@@ -9,20 +11,11 @@ socket.on('message', (message) => {
     document.querySelector('ul').appendChild(msgElement);
 }) // we listen to the 'message' event EMITTED BY THE SERVER
 
+socket.on('cpuUsage', (cpuUsage) => {
+    const cpuUsElement = document.createElement('li');
+    cpuUsElement.innerHTML = cpuUsage;
 
-// Displaying CPU usage on client side
-socket.on('cpuUsage', (package) => {
-    
-    if (document.getElementById(socket.id) === package.id) {
-        let el = document.getElementById(socket.id);
-        el.innerHTML = package.value;
-    }
-    else {
-        let newEl = document.createElement('li');
-        newEl.innerHTML = package.value;
-        newEl.id = package.id;
-        document.querySelector('ul').appendChild(newEl);
-    }
+    document.querySelector('ul').appendChild(cpuUsElement);
 })
 
 // We set up the button
@@ -34,17 +27,11 @@ sendBtn.addEventListener('click', () => {
     /* console.log(inputMsg); */
 })
 
-/* Sending CPU usage to server */
+/* TESTING FURTHER FUNCTIONALITY */
 setInterval(() => {
     let min = 0;
     let max = 100;
-    let value = Math.floor(Math.random() * (max - min + 1) + min);
+    let value = Math.floor(Math.random() * (max - min) + min);
     /* console.log(value); */ 
-    let package = {
-        value,
-        'id': socket.id
-    };
-    
-    socket.emit('cpuUsage', package);
-    console.log(`${socket.id} has ${value}%`);
-}, 2000);
+    socket.emit('cpuUsage', value);
+}, 500);

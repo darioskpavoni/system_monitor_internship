@@ -9,21 +9,15 @@ socket.on('message', (message) => {
     document.querySelector('ul').appendChild(msgElement);
 }) // we listen to the 'message' event EMITTED BY THE SERVER
 
-
-// Displaying CPU usage on client side
-socket.on('cpuUsage', (package) => {
-    
-    if (document.getElementById(socket.id) === package.id) {
-        let el = document.getElementById(socket.id);
-        el.innerHTML = package.value;
-    }
-    else {
-        let newEl = document.createElement('li');
-        newEl.innerHTML = package.value;
-        newEl.id = package.id;
-        document.querySelector('ul').appendChild(newEl);
-    }
-})
+setInterval(() => {
+    socket.on('cpuUsage', (cpuUsage) => {
+        const msgElement = document.createElement('li');
+        msgElement.innerHTML = message;
+        /* console.log(msgElement); */
+        document.querySelector('ul').appendChild(msgElement);        
+        
+    })
+}, 1000);
 
 // We set up the button
 const sendBtn = document.querySelector('button');
@@ -34,17 +28,11 @@ sendBtn.addEventListener('click', () => {
     /* console.log(inputMsg); */
 })
 
-/* Sending CPU usage to server */
+/* TESTING FURTHER FUNCTIONALITY */
 setInterval(() => {
     let min = 0;
     let max = 100;
     let value = Math.floor(Math.random() * (max - min + 1) + min);
     /* console.log(value); */ 
-    let package = {
-        value,
-        'id': socket.id
-    };
-    
-    socket.emit('cpuUsage', package);
-    console.log(`${socket.id} has ${value}%`);
+    socket.emit('cpuUsage', value);
 }, 2000);

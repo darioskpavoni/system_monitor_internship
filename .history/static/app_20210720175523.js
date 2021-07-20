@@ -9,18 +9,16 @@ socket.on('message', (message) => {
     document.querySelector('ul').appendChild(msgElement);
 }) // we listen to the 'message' event EMITTED BY THE SERVER
 
-
-// Displaying CPU usage on client side
-socket.on('cpuUsage', (package) => {
+socket.on('cpuUsage', (cpuUsage) => {
     
-    if (document.getElementById(socket.id) === package.id) {
+    if (document.getElementById(socket.id)) {
         let el = document.getElementById(socket.id);
-        el.innerHTML = package.value;
+        el.innerHTML = cpuUsage;
     }
     else {
         let newEl = document.createElement('li');
-        newEl.innerHTML = package.value;
-        newEl.id = package.id;
+        newEl.innerHTML = cpuUsage;
+        newEl.id = socket.id;
         document.querySelector('ul').appendChild(newEl);
     }
 })
@@ -40,11 +38,6 @@ setInterval(() => {
     let max = 100;
     let value = Math.floor(Math.random() * (max - min + 1) + min);
     /* console.log(value); */ 
-    let package = {
-        value,
-        'id': socket.id
-    };
-    
-    socket.emit('cpuUsage', package);
+    socket.emit('cpuUsage', value);
     console.log(`${socket.id} has ${value}%`);
 }, 2000);

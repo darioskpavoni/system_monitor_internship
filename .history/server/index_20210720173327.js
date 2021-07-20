@@ -36,11 +36,12 @@ io.on('connection', (socket) => {
         io.emit('message', `${socket.id.substr(0,2)} said ${message}`);
     });
 
-    // getting cpuUsage from client side
-    socket.on('cpuUsage', (package) => {
-        console.log(`${package.id.substr(0,2)} said ${package.value}`);
-        io.emit('cpuUsage', package);
-    })
+    setInterval(() => {
+        socket.on('cpuUsage', (cpuUsage) => {
+        console.log(`${socket.id.substr(0,2)} said ${cpuUsage}`);
+        io.emit('cpuUsage', `${socket.id.substr(0,2)} said ${cpuUsage}`);
+        })
+    }, 2000);
 
 });
 
