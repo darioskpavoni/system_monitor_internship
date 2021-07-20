@@ -13,11 +13,21 @@ socket.on('message', (message) => {
 // Displaying CPU usage on client side
 socket.on('cpuUsage', (package) => {
 
-    if (document.getElementById(package.id)) {
+    if (document.getElementById(package.id) && package.id === socket.id) {
+        let el = document.getElementById(socket.id);
+        el.innerHTML = package.cpuUsage;
+    }
+    else if (!document.getElementById(package.id) && package.id === socket.id) {
+        let newEl = document.createElement('li');
+        newEl.id = socket.id;
+        newEl.innerHTML = package.cpuUsage;
+        document.getElementById('system').appendChild(newEl);
+    }
+    else if (document.getElementById(package.id) && package.id !== socket.id) {
         let el = document.getElementById(package.id);
         el.innerHTML = package.cpuUsage;
     }
-    else if (!document.getElementById(package.id)) {
+    else if (!document.getElementById(package.id) && package.id !== socket.id) {
         let newEl = document.createElement('li');
         newEl.id = package.id;
         newEl.innerHTML = package.cpuUsage;
