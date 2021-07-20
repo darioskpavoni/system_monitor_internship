@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
 
     // getting cpuUsage from client side
     socket.on('cpuUsage', (package) => {
-        console.log(`${package.id} said ${package.cpuUsage}`);
+        console.log(`${package.id} said ${package.value}`);
         io.emit('cpuUsage', package);
     })
 

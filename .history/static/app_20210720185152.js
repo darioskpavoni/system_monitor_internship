@@ -41,10 +41,10 @@ setInterval(() => {
     let value = Math.floor(Math.random() * (max - min + 1) + min);
     /* console.log(value); */ 
     let package = {
-        'cpuUsage': value,
+        value,
         'id': socket.id
     };
     
     socket.emit('cpuUsage', package);
-    console.log(`${package.id.substr(0,2)} has ${package.cpuUsage}%`);
+    console.log(`${package.id} has ${value}%`);
 }, 2000);

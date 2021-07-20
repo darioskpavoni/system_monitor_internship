@@ -46,5 +46,5 @@ setInterval(() => {
     };
     
     socket.emit('cpuUsage', package);
-    console.log(`${package.id.substr(0,2)} has ${package.cpuUsage}%`);
+    console.log(`${package.id} has ${package.value}%`);
 }, 2000);
