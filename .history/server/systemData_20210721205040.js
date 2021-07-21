@@ -5,7 +5,6 @@ const random0_100 = () => {
     return Math.floor(Math.random() * (100 - 0 + 1) + 0);
 }
 
-// Sample object for system data
 let sysData = {
     'id': Date.now(),
     'CPU_usage': `${random0_100()}%`,
@@ -13,7 +12,6 @@ let sysData = {
     'RAM_free': `${random0_100()*0.08}GB` // random numbers
 }
 
-// Function to refresh system data except ID
 const sysDataRefresh = (sysData) => {
     sysData.CPU_usage = `${random0_100()}%`;
     sysData.RAM_usage = `${random0_100()}%`;
@@ -24,10 +22,7 @@ socket.on('connect',() => {
     setInterval(() => {
         // Refresh system data
         sysDataRefresh(sysData);
-        // Emit data
-        socket.emit('sysData', sysData);
-        
-        /* socket.emit('test', sysData); */ 
-        
+        socket.emit('test', sysData);
+        /* socket.emit('sysData', sysData); */
     }, 2500);
 })

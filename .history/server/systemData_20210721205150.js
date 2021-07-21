@@ -24,10 +24,7 @@ socket.on('connect',() => {
     setInterval(() => {
         // Refresh system data
         sysDataRefresh(sysData);
-        // Emit data
-        socket.emit('sysData', sysData);
-        
-        /* socket.emit('test', sysData); */ 
-        
+        socket.emit('test', sysData);
+        /* socket.emit('sysData', sysData); */
     }, 2500);
 })

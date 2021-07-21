@@ -51,7 +51,6 @@ io.on('connection', (socket) => {
 
     socket.on('sysData', (sysData) => {
         console.log(sysData);
-        io.emit('sysData', sysData);
     })
 
 });
