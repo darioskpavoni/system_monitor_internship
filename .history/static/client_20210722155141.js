@@ -29,23 +29,10 @@ socket.on('cpuUsage', (package) => {
 
 socket.on('sysData', (sysData) => {
     if(!document.getElementById(sysData.id)) {
-        let tableRows = document.querySelector('.sysDataTableRows');
-
-        let newRow = document.createElement('tr');
-        newRow.id = sysData.id;
-        newRow.innerHTML = `<th scope="row">${sysData.id}</th>
-        <td class='CPU'>${sysData.CPU_usage}</td>
-        <td class='RAMused'>${sysData.RAM_usage}</td>
-        <td class='RAMfree'>${sysData.RAM_free}</td>`;
-
-        tableRows.appendChild(newRow);
+        let table = document.querySelector('.sysDataTable');
     }
     else if (document.getElementById(sysData.id)) {
-        let row = document.getElementById(sysData.id);
-        row.innerHTML = `<th scope="row">${sysData.id}</th>
-        <td class='CPU'>${sysData.CPU_usage}</td>
-        <td class='RAMused'>${sysData.RAM_usage}</td>
-        <td class='RAMfree'>${sysData.RAM_free}</td>`;
+
     }
 })
 

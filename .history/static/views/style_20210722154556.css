@@ -1,0 +1,10 @@
+body { 
+    width: 100%;
+    justify-content: center;
+}
+
+.sysDataTable {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

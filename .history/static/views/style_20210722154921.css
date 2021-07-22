@@ -1,0 +1,15 @@
+body { 
+    width: 100%;
+}
+
+.sysDataTable {
+    width: 50%;
+    margin: 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.sysDataTable th {
+    margin-left: 15px;
+}

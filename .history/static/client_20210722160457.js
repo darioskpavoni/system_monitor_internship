@@ -65,7 +65,7 @@ sendBtn.addEventListener('click', () => {
 })
 
 /* Sending CPU usage to server */
-setInterval(() => {
+/* setInterval(() => {
     let min = 0;
     let max = 100;
     let value = Math.floor(Math.random() * (max - min + 1) + min);
@@ -78,4 +78,4 @@ setInterval(() => {
     socket.emit('cpuUsage', package);
     console.log(`${package.id} has ${package.cpuUsage}%`);
     
-}, 2000);
+}, 2000); */

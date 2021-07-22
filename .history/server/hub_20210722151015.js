@@ -9,9 +9,9 @@ const server = http.createServer(app);
 
 
 const path = require('path');
-const publicPath = path.join(__dirname, '../static/views');
+const publicPath = path.join(__dirname, '../views');
 
-app.use("/static", express.static('../static'));
+app.use("/static", express.static('../static/'));
 
 app.get('/', (req,res) => {
     res.sendFile(path.join(publicPath,'/index.html'));
@@ -40,10 +40,10 @@ io.on('connection', (socket) => {
     });
 
     // getting cpuUsage from client side
-    /* socket.on('cpuUsage', (package) => {
+    socket.on('cpuUsage', (package) => {
         console.log(`${package.id} said ${package.cpuUsage}`);
         io.emit('cpuUsage', package);
-    }) */
+    })
 
     /* socket.on('test', (message) => {
         console.log(message);
