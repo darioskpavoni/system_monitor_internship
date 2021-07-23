@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-const socket = io("http://localhost:3001");
+const socket = io("ws://localhost:3001");
 
 const os = require('os-utils');
 
@@ -32,6 +32,7 @@ socket.on('connect',() => {
         sysDataRefresh(sysData);
         // Emit data
         socket.emit('sysData', sysData);
+        
         /* socket.emit('test', sysData); */ 
         
     }, 2500);
