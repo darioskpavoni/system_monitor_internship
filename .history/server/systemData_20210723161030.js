@@ -10,9 +10,10 @@ const random0_100 = () => {
     return Math.floor(Math.random() * (100 - 0 + 1) + 0);
 }
 
-/* DISK INFO DATA FIRST CALCULATION */
+/* DISK INFO DATA RETRIEVAL */
 
-const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
+setInterval(() => {
+    const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
 
     const parsedOutput = output.split(/\r?\n/);
     let temp = [];
@@ -35,8 +36,16 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
             ]
             );
     }
+}, 5000);
 
 /* --------------------------------------------- */
+
+
+
+const parsedOutput = output.split(/\r?\n/);
+let temp = [];
+/* console.log(parsedOutput); */
+let diskData = [] // Final object
 
 // Sample object for system data
 let sysData = {
@@ -56,33 +65,6 @@ const sysDataRefresh = (sysData) => {
     /* console.log(sysData.CPU_usage); */
     sysData.RAM_usage = `${(((os.totalmem()-os.freemem())*100)/os.totalmem()).toFixed(1)}%`;
     sysData.RAM_free = `${(os.freemem()/1000).toFixed(2)}GB`;
-
-    // DISK data refresh
-    const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
-
-    const parsedOutput = output.split(/\r?\n/);
-    let temp = [];
-    /* console.log(parsedOutput); */
-    let diskData = [] // Final array
-
-    // Removes lots of whitespaces and replaces them with a single space
-    for (let i = 1; i<parsedOutput.length-2; i++) {
-        temp.push(parsedOutput[i].replace(/\s+/g, ' '))
-    }
-    // Splits strings into array elements by space
-    for (let j = 0; j<temp.length; j++) {
-        temp[j] = temp[j].split(" ");
-        diskData.push( 
-            [
-            `${temp[j][1]}`, 
-            `${temp[j][19]}`, 
-            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`,
-            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`
-            ]
-            );
-    }
-    sysData.DISK_info = diskData;
-
 }
 
 socket.on('connect',() => {
@@ -92,7 +74,6 @@ socket.on('connect',() => {
         // Emit data
         socket.emit('sysData', sysData);
         /* socket.emit('test', sysData); */ 
-        console.log(sysData);
         
     }, 2500);
 })

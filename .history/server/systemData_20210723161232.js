@@ -10,9 +10,10 @@ const random0_100 = () => {
     return Math.floor(Math.random() * (100 - 0 + 1) + 0);
 }
 
-/* DISK INFO DATA FIRST CALCULATION */
+/* DISK INFO DATA RETRIEVAL */
 
-const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
+setInterval(() => {
+    const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
 
     const parsedOutput = output.split(/\r?\n/);
     let temp = [];
@@ -35,8 +36,16 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
             ]
             );
     }
+}, 5000);
 
 /* --------------------------------------------- */
+
+
+
+const parsedOutput = output.split(/\r?\n/);
+let temp = [];
+/* console.log(parsedOutput); */
+let diskData = [] // Final object
 
 // Sample object for system data
 let sysData = {
@@ -76,8 +85,8 @@ const sysDataRefresh = (sysData) => {
             [
             `${temp[j][1]}`, 
             `${temp[j][19]}`, 
-            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`,
-            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`
+            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}`,
+            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`
             ]
             );
     }
@@ -92,7 +101,6 @@ socket.on('connect',() => {
         // Emit data
         socket.emit('sysData', sysData);
         /* socket.emit('test', sysData); */ 
-        console.log(sysData);
         
     }, 2500);
 })

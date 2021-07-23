@@ -38,10 +38,6 @@ socket.on('sysData', (sysData) => {
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>`;
 
-        for (let i = 0; i<sysData.DISK_info.length; i++) {
-            newRow.innerHTML += `<td class='DISKused'>${sysData.DISK_info[i][0]} - ${sysData.DISK_info[i][2]}</td>`
-        }
-
         tableRows.appendChild(newRow);
     }
     else if (document.getElementById(sysData.id)) {

@@ -76,8 +76,8 @@ const sysDataRefresh = (sysData) => {
             [
             `${temp[j][1]}`, 
             `${temp[j][19]}`, 
-            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`,
-            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`
+            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}`,
+            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`
             ]
             );
     }
