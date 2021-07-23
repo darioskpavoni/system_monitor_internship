@@ -60,6 +60,6 @@ io.on('connection', (socket) => {
 });
 
 // Final part, telling our server to listen on port 3001
-server.listen(3001, '0.0.0.0',() => {
-    console.log('Listening to port: 3001');
+server.listen(3001, '0.0.0.0', () => {
+    console.log('Listening on http://localhost:3001');
 })

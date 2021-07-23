@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-const socket = io("ws://192.168.0.231:3001");
+const socket = io("ws://192.168.0.231");
 
 const os = require('os-utils');
 

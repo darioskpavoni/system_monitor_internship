@@ -19,7 +19,7 @@ app.get('/', (req,res) => {
 
 // Import socket.io with function which takes our http server as an argument
 const io = require('socket.io')(server, {
-    cors: { origin: '*' } // basically allowing any URL to access our back-end URL
+    cors: { origin: 'http://192.168.0.231:3001/' } // basically allowing any URL to access our back-end URL
 });
 
 // Logic for socket.io -> we have an EVENT-BASED system
@@ -60,6 +60,6 @@ io.on('connection', (socket) => {
 });
 
 // Final part, telling our server to listen on port 3001
-server.listen(3001, '0.0.0.0',() => {
-    console.log('Listening to port: 3001');
+server.listen(3001, '0.0.0.0', () => {
+    console.log('Listening on http://localhost:3001');
 })
