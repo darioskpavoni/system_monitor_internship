@@ -31,58 +31,32 @@ socket.on('sysData', (sysData) => {
     if(!document.getElementById(sysData.id)) {
         let tableRows = document.querySelector('.sysDataTableRows');
 
-        /* Disk Data Formatting */
-        // Used disk
-        let usedDisk = '';
-        for (let i = 0; i<sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}<br>`;
-        }
-        // Free disk
-        let freeDisk = '';
-        for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
-        }
-
         let newRow = document.createElement('tr');
         newRow.id = sysData.id;
         newRow.innerHTML = `<th scope="row">${sysData.id}</th>
         <td class='CPU'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}</td>
-        <td class='DISKfree-container'>${freeDisk}</td>`;
+        <td class='DISKused-container'></td>`;
+
+        let diskDataContainer = document.querySelector('.DISKused-container');
+
+        for (let i = 0; i<sysData.DISK_info.length; i++) {
+            diskDataContainer.innerHTML += 
+            `<div>${sysData.DISK_info[i][0]} ${sysData.DISK_info[i][2]}GB</div>`
+        }
+
+        
 
         tableRows.appendChild(newRow);
     }
     else if (document.getElementById(sysData.id)) {
         let row = document.getElementById(sysData.id);
-
-        /* Disk Data Formatting */
-
-        // Used disk
-        let usedDisk = '';
-        for (let i = 0; i<sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}<br>`;
-        }
-        // Free disk
-        let freeDisk = '';
-        for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
-        }
-        /*  */
-        
         row.innerHTML = `<th scope="row">${sysData.id}</th>
         <td class='CPUload'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
-        <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}</td>
-        <td class='DISKfree-container'>${freeDisk}</td>`;
+        <td class='RAMfree'>${sysData.RAM_free}</td>`;
     }
-    /* let diskDataContainer = document.querySelector('.DISKused-container');
-    for (let i = 0; i<sysData.DISK_info.length; i++) {
-        diskDataContainer.innerHTML += `1 `;
-    } */
-
 })
 
 // Deleting row with CPU usage on disconnection

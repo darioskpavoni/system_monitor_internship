@@ -26,40 +26,16 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
     // Splits strings into array elements by space
     for (let j = 0; j<temp.length; j++) {
         temp[j] = temp[j].split(" ");
-        let partitionName = temp[j][19];
-        if (partitionName != undefined) {
-            diskData.push( 
-                [
-                `${temp[j][1]}`, // Partition letter
-                `${temp[j][19]}`,  // Partition name
-                `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`, // Partition used space
-                `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`  // Partition free space
-                ]
-            );
-            }
-    }
-    // Selecting disk used data
-    let diskUsed = [];
-    for (let i = 0; i<diskData.length; i++) {
-        diskUsed.push(
+        diskData.push( 
             [
-                `${diskData[i][0]}`,
-                `${diskData[i][2]}`
+            `${temp[j][1]}`, 
+            `${temp[j][19]}`, 
+            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}`,
+            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`
             ]
-        )
-        
+            );
     }
 
-    // Selecting disk free data
-    let diskFree = [];
-    for (let i = 0; i<diskData.length; i++) {
-        diskFree.push(
-            [
-                `${diskData[i][0]}`,
-                `${diskData[i][3]}`
-            ]
-        )
-    }
 /* --------------------------------------------- */
 
 // Sample object for system data
@@ -68,8 +44,7 @@ let sysData = {
     'CPU_usage': `${random0_100()}%`,
     'RAM_usage': `${random0_100()}%`,
     'RAM_free': `${random0_100()*0.08}GB`, // random numbers
-    'DISK_used': diskUsed,
-    'DISK_free': diskFree
+    'DISK_info': diskData
 }
 
 // Function to refresh system data except ID
@@ -99,41 +74,15 @@ const sysDataRefresh = (sysData) => {
     for (let j = 0; j<temp.length; j++) {
         temp[j] = temp[j].split(" ");
         let partitionName = temp[j][19];
-        if (partitionName != undefined) {
-            diskData.push( 
-                [
-                `${temp[j][1]}`, // Partition letter
-                `${temp[j][19]}`,  // Partition name
-                `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`, // Partition used space
-                `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`  // Partition free space
-                ]
-            );
-        }
-        
-    }
-    // Refreshing disk used data
-    diskUsed = []; // Emptying diskUsed. Otherwise it just pushes two more times in the same array (we get duplicated data)
-    for (let i = 0; i<diskData.length; i++) {
-        diskUsed.push(
-            [
-                `${diskData[i][0]}`,
-                `${diskData[i][2]}`
-            ]
-        )
-    }
-    sysData.DISK_used = diskUsed;
 
-    // Refreshing disk free data
-    let diskFree = [];
-    for (let i = 0; i<diskData.length; i++) {
-        diskFree.push(
+        diskData.push( 
             [
-                `${diskData[i][0]}`, // TO FIX. DO TOTAL SPACE - USED
-                `${diskData[i][3]}`
-            ]
-        )
+            `${temp[j][1]}`
+            ] 
+            );
     }
-    sysData.DISK_free = diskFree;
+    /* console.log(temp); */
+    sysData.DISK_info = diskData;
 
 }
 

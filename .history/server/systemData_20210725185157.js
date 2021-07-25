@@ -26,17 +26,14 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
     // Splits strings into array elements by space
     for (let j = 0; j<temp.length; j++) {
         temp[j] = temp[j].split(" ");
-        let partitionName = temp[j][19];
-        if (partitionName != undefined) {
-            diskData.push( 
-                [
-                `${temp[j][1]}`, // Partition letter
-                `${temp[j][19]}`,  // Partition name
-                `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`, // Partition used space
-                `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}GB`  // Partition free space
-                ]
+        diskData.push( 
+            [
+            `${temp[j][1]}`, 
+            `${temp[j][19]}`, 
+            `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}`,
+            `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`
+            ]
             );
-            }
     }
     // Selecting disk used data
     let diskUsed = [];
@@ -47,7 +44,6 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
                 `${diskData[i][2]}`
             ]
         )
-        
     }
 
     // Selecting disk free data
@@ -112,7 +108,6 @@ const sysDataRefresh = (sysData) => {
         
     }
     // Refreshing disk used data
-    diskUsed = []; // Emptying diskUsed. Otherwise it just pushes two more times in the same array (we get duplicated data)
     for (let i = 0; i<diskData.length; i++) {
         diskUsed.push(
             [

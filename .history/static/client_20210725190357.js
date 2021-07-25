@@ -35,12 +35,12 @@ socket.on('sysData', (sysData) => {
         // Used disk
         let usedDisk = '';
         for (let i = 0; i<sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}<br>`;
+            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_info[i][1]}<br>`;
         }
         // Free disk
         let freeDisk = '';
         for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+            usedDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_info[i][1]}<br>`;
         }
 
         let newRow = document.createElement('tr');
@@ -49,7 +49,7 @@ socket.on('sysData', (sysData) => {
         <td class='CPU'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}</td>
+        <td class='DISKused-container'>${usedDisk}</td>;
         <td class='DISKfree-container'>${freeDisk}</td>`;
 
         tableRows.appendChild(newRow);
@@ -62,12 +62,12 @@ socket.on('sysData', (sysData) => {
         // Used disk
         let usedDisk = '';
         for (let i = 0; i<sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}<br>`;
+            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_info[i][1]}<br>`;
         }
         // Free disk
         let freeDisk = '';
         for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+            usedDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_info[i][1]}<br>`;
         }
         /*  */
         
@@ -75,7 +75,7 @@ socket.on('sysData', (sysData) => {
         <td class='CPUload'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}</td>
+        <td class='DISKused-container'>${usedDisk}</td>;
         <td class='DISKfree-container'>${freeDisk}</td>`;
     }
     /* let diskDataContainer = document.querySelector('.DISKused-container');

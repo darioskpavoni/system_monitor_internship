@@ -112,7 +112,7 @@ const sysDataRefresh = (sysData) => {
         
     }
     // Refreshing disk used data
-    diskUsed = []; // Emptying diskUsed. Otherwise it just pushes two more times in the same array (we get duplicated data)
+    diskUsed = []; // Emptying diskUsed. Otherwise it just pushes two more times in the same array.
     for (let i = 0; i<diskData.length; i++) {
         diskUsed.push(
             [

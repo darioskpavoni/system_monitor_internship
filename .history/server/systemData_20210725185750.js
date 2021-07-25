@@ -112,7 +112,6 @@ const sysDataRefresh = (sysData) => {
         
     }
     // Refreshing disk used data
-    diskUsed = []; // Emptying diskUsed. Otherwise it just pushes two more times in the same array (we get duplicated data)
     for (let i = 0; i<diskData.length; i++) {
         diskUsed.push(
             [
@@ -144,7 +143,7 @@ socket.on('connect',() => {
         // Emit data
         socket.emit('sysData', sysData);
         /* socket.emit('test', sysData); */ 
-        console.log(sysData);
+        /* console.log(sysData); */
         
     }, 2500);
 })
