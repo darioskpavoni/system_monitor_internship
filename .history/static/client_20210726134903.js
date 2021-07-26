@@ -75,7 +75,7 @@ socket.on('sysData', (sysData) => {
         <td class='CPUload'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}%</td>
+        <td class='DISKused-container'>${usedDisk}</td>
         <td class='DISKfree-container'>${freeDisk}</td>`;
     }
     /* let diskDataContainer = document.querySelector('.DISKused-container');

@@ -127,7 +127,7 @@ const sysDataRefresh = (sysData) => {
         )
         
     }
-    /* console.log(diskUsed); */
+    console.log(diskUsed);
     sysData.DISK_used = diskUsed;
 
     // Refreshing disk free data

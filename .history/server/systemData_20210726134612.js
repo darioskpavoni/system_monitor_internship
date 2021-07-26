@@ -35,7 +35,8 @@ const output = execSync('wmic logicaldisk', {encoding: 'utf-8'});
                 `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`, // Partition free space GB
                 `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`,  // Partition total space GB
                 `${((temp[j][14]/Math.pow(1024, 3)).toFixed(1)-(temp[j][10]/Math.pow(1024, 3)).toFixed(1)).toFixed(1)}`,  // Partition used space GB
-                `${(((((temp[j][14]/Math.pow(1024, 3)).toFixed(1)-(temp[j][10]/Math.pow(1024, 3)).toFixed(1)).toFixed(1))/(temp[j][14]/Math.pow(1024, 3)).toFixed(1))*100).toFixed(1)}` // Calculation of used space in %: ((used in GB)/(total in GB))*100)
+                `${(diskData[4]/diskData[3]).toFixed(1)}` // Partition used space %
+
                 ]
             );
             }
@@ -111,7 +112,7 @@ const sysDataRefresh = (sysData) => {
                 `${(temp[j][10]/Math.pow(1024, 3)).toFixed(1)}GB`, // Partition free space GB
                 `${(temp[j][14]/Math.pow(1024, 3)).toFixed(1)}`,  // Partition total space GB
                 `${((temp[j][14]/Math.pow(1024, 3)).toFixed(1)-(temp[j][10]/Math.pow(1024, 3)).toFixed(1)).toFixed(1)}`,  // Partition used space GB
-                `${(((((temp[j][14]/Math.pow(1024, 3)).toFixed(1)-(temp[j][10]/Math.pow(1024, 3)).toFixed(1)).toFixed(1))/(temp[j][14]/Math.pow(1024, 3)).toFixed(1))*100).toFixed(1)}` // Calculation of used space in %: ((used in GB)/(total in GB))*100)
+                `${(((((temp[j][14]/Math.pow(1024, 3)).toFixed(1)-(temp[j][10]/Math.pow(1024, 3)).toFixed(1)).toFixed(1))/(temp[j][14]/Math.pow(1024, 3)).toFixed(1))*100).toFixed(1)}`
                 ]
             );
             }
@@ -127,7 +128,7 @@ const sysDataRefresh = (sysData) => {
         )
         
     }
-    /* console.log(diskUsed); */
+    console.log(diskUsed);
     sysData.DISK_used = diskUsed;
 
     // Refreshing disk free data
