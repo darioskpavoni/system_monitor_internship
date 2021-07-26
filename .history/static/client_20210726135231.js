@@ -67,7 +67,7 @@ socket.on('sysData', (sysData) => {
         // Free disk
         let freeDisk = '';
         for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}%<br>`;
         }
         /*  */
         

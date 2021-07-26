@@ -40,7 +40,7 @@ socket.on('sysData', (sysData) => {
         // Free disk
         let freeDisk = '';
         for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}%<br>`;
         }
 
         let newRow = document.createElement('tr');
@@ -49,7 +49,7 @@ socket.on('sysData', (sysData) => {
         <td class='CPU'>${sysData.CPU_usage}</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
-        <td class='DISKused-container'>${usedDisk}</td>
+        <td class='DISKused-container'>${usedDisk}%</td>
         <td class='DISKfree-container'>${freeDisk}</td>`;
 
         tableRows.appendChild(newRow);
@@ -67,7 +67,7 @@ socket.on('sysData', (sysData) => {
         // Free disk
         let freeDisk = '';
         for (let i = 0; i<sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}%<br>`;
         }
         /*  */
         
