@@ -1,4 +1,4 @@
-const socket = io('ws://192.168.0.158:3001');  // we use ws (WebSocket) here
+const socket = io('ws://192.168.0.231:3001');  // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
 

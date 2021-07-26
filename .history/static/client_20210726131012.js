@@ -1,5 +1,33 @@
-const socket = io('ws://192.168.0.158:3001');  // we use ws (WebSocket) here
+/* import * as echarts from 'echarts';
+
+// initialize the echarts instance
+var myChart = echarts.init(document.getElementById('main'));
+// Draw the chart
+myChart.setOption({
+    title: {
+        text: 'ECharts Getting Started Example'
+    },
+    tooltip: {},
+    xAxis: {
+        data: ['shirt', 'cardigan', 'chiffon', 'pants', 'heels', 'socks']
+    },
+    yAxis: {},
+    series: [{
+        name: 'sales',
+        type: 'bar',
+        data: [5, 20, 36, 10, 10, 20]
+    }]
+});
+
+ */
+
+
+
+
+
+
 // The io object (the socket.io client library) is now globally available in the browser
+const socket = io('ws://192.168.0.231:3001');  // we use ws (WebSocket) here
 
 
 

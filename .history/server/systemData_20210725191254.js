@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-const socket = io("http://192.168.0.158:3001");
+const socket = io("http://192.168.0.231:3001");
 
 // For Disk Info command
 const execSync = require('child_process').execSync;
@@ -144,8 +144,7 @@ socket.on('connect',() => {
         // Emit data
         socket.emit('sysData', sysData);
         /* socket.emit('test', sysData); */ 
-        /* console.log(sysData); */
-        console.log(`${new Date()} - Sending system data...`);
+        console.log(sysData);
         
     }, 2500);
 })

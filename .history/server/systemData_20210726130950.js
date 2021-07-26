@@ -144,8 +144,7 @@ socket.on('connect',() => {
         // Emit data
         socket.emit('sysData', sysData);
         /* socket.emit('test', sysData); */ 
-        /* console.log(sysData); */
-        console.log(`${new Date()} - Sending system data...`);
+        console.log(sysData);
         
     }, 2500);
 })
