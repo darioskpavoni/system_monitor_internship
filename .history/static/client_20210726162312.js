@@ -25,24 +25,24 @@ socket.on("cpuUsage", (package) => {
 let nodeId = []; // Array to contain all user IDs
 let timers = {}; // Object to contain all timers for deleting not updated data on page
 
+const testTimeout = () => {
+  document.getElementById(sysData.id).remove();
+  console.log(`Deleting node ${sysData.id}`);
+};
+
 socket.on("sysData", (sysData) => {
   if (!timers[sysData.id]) {
     timers[sysData.id] = [];
   }
 
-  timers[sysData.id].push(
-    setTimeout(() => {
-      document.getElementById(sysData.id).remove();
-      console.log(`Deleting node ${sysData.id}`);
-    }, 4000)
-  );
+  timers[sysData.id].push(setTimeout(testTimeout, 4000));
 
   if (!nodeId.includes(sysData.id)) {
     // Creating a list of the users by their IDs
     nodeId.push(sysData.id);
   }
 
-  if (timers[sysData.id].length > 1) {
+  if (timers[sysData.id].length > 0) {
     const t = timers[sysData.id].shift();
     clearTimeout(t);
   }
