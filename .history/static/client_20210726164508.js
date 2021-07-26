@@ -22,11 +22,12 @@ socket.on("cpuUsage", (package) => {
   }
 });
 
+let nodeId = []; // Array to contain all user IDs
 let timers = {}; // Object to contain all timers for deleting not updated data on page
 
 socket.on("sysData", (sysData) => {
   if (!timers[sysData.id]) {
-    timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info
+    timers[sysData.id] = [];
   }
 
   timers[sysData.id].push(
@@ -37,13 +38,16 @@ socket.on("sysData", (sysData) => {
   );
 
   if (timers[sysData.id].length > 1) {
-    // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one gets deleted and cleared, and so on.
     const t = timers[sysData.id].shift();
     clearTimeout(t);
-    console.log(`Clearing timer for ${sysData.id}`);
   }
 
-  /* console.log(timers); */
+  console.log(`Clearing timer for ${sysData.id}`);
+
+  console.log("Active users: " + nodeId);
+
+  console.log(timers);
+  /* console.log(nodeId); */
 
   if (!document.getElementById(sysData.id)) {
     let tableRows = document.querySelector(".sysDataTableRows");
@@ -95,3 +99,28 @@ socket.on("sysData", (sysData) => {
         <td class='DISKfree-container'>${freeDisk}</td>`;
   }
 });
+
+// We set up the button
+/* const sendBtn = document.querySelector('button');
+let inputMsg = '';
+sendBtn.addEventListener('click', () => {
+    inputMsg = document.querySelector('input').value;
+    socket.emit('message', inputMsg);
+    
+}) */
+
+/* Sending CPU usage to server */
+/* setInterval(() => {
+    let min = 0;
+    let max = 100;
+    let value = Math.floor(Math.random() * (max - min + 1) + min);
+    
+    let package = {
+        'cpuUsage': value,
+        'id': socket.id
+    };
+    
+    socket.emit('cpuUsage', package);
+    console.log(`${package.id} has ${package.cpuUsage}%`);
+    
+}, 2000); */

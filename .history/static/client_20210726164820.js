@@ -26,7 +26,7 @@ let timers = {}; // Object to contain all timers for deleting not updated data o
 
 socket.on("sysData", (sysData) => {
   if (!timers[sysData.id]) {
-    timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info
+    timers[sysData.id] = [];
   }
 
   timers[sysData.id].push(
@@ -43,7 +43,8 @@ socket.on("sysData", (sysData) => {
     console.log(`Clearing timer for ${sysData.id}`);
   }
 
-  /* console.log(timers); */
+  console.log(timers);
+  /* console.log(nodeId); */
 
   if (!document.getElementById(sysData.id)) {
     let tableRows = document.querySelector(".sysDataTableRows");
@@ -95,3 +96,28 @@ socket.on("sysData", (sysData) => {
         <td class='DISKfree-container'>${freeDisk}</td>`;
   }
 });
+
+// We set up the button
+/* const sendBtn = document.querySelector('button');
+let inputMsg = '';
+sendBtn.addEventListener('click', () => {
+    inputMsg = document.querySelector('input').value;
+    socket.emit('message', inputMsg);
+    
+}) */
+
+/* Sending CPU usage to server */
+/* setInterval(() => {
+    let min = 0;
+    let max = 100;
+    let value = Math.floor(Math.random() * (max - min + 1) + min);
+    
+    let package = {
+        'cpuUsage': value,
+        'id': socket.id
+    };
+    
+    socket.emit('cpuUsage', package);
+    console.log(`${package.id} has ${package.cpuUsage}%`);
+    
+}, 2000); */
