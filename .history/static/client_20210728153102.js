@@ -1,4 +1,4 @@
-import * as echarts from "echarts";
+const echarts = require("echarts");
 
 // initialize the echarts instance
 var myChart = echarts.init(document.getElementById("main"));
@@ -46,7 +46,6 @@ socket.on("cpuUsage", (package) => {
 });
 
 let timers = {}; // Object to contain all timers for deleting not updated data on page
-
 socket.on("sysData", (sysData) => {
   if (!timers[sysData.id]) {
     timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info

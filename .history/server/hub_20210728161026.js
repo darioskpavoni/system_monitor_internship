@@ -1,18 +1,18 @@
 // This code is the BACK-END!
 
 // HTTP server with EXPRESS
-import express from "express";
+import express, { static } from "express";
 const app = express();
-import http from "http";
-const server = http.createServer(app);
+import { createServer } from "http";
+const server = createServer(app);
 
-import path from "path";
-const publicPath = path.join(__dirname, "../static/views");
+import { join } from "path";
+const publicPath = join(__dirname, "../static/views");
 
-app.use("/static", express.static("../static"));
+app.use("/static", static("../static"));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(publicPath, "/index.html"));
+  res.sendFile(join(publicPath, "/index.html"));
 });
 
 // Import socket.io with function which takes our http server as an argument

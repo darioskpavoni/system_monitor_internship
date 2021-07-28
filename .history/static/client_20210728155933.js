@@ -1,26 +1,3 @@
-import * as echarts from "echarts";
-
-// initialize the echarts instance
-var myChart = echarts.init(document.getElementById("main"));
-// Draw the chart
-myChart.setOption({
-  title: {
-    text: "ECharts Getting Started Example",
-  },
-  tooltip: {},
-  xAxis: {
-    data: ["shirt", "cardigan", "chiffon", "pants", "heels", "socks"],
-  },
-  yAxis: {},
-  series: [
-    {
-      name: "sales",
-      type: "bar",
-      data: [5, 20, 36, 10, 10, 20],
-    },
-  ],
-});
-
 const socket = io("ws://192.168.0.157:3001"); // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
