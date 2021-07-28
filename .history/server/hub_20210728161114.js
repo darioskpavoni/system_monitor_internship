@@ -6,7 +6,7 @@ const app = express();
 import http from "http";
 const server = http.createServer(app);
 
-import path from "path";
+const path = require("path");
 const publicPath = path.join(__dirname, "../static/views");
 
 app.use("/static", express.static("../static"));

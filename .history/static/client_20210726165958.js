@@ -1,7 +1,10 @@
-import * as echarts from "echarts";
+const socket = io("ws://192.168.0.158:3001"); // we use ws (WebSocket) here
+// The io object (the socket.io client library) is now globally available in the browser
+
+const echarts = require("echarts");
 
 // initialize the echarts instance
-var myChart = echarts.init(document.getElementById("main"));
+let myChart = echarts.init(document.getElementById("main"));
 // Draw the chart
 myChart.setOption({
   title: {
@@ -20,9 +23,6 @@ myChart.setOption({
     },
   ],
 });
-
-const socket = io("ws://192.168.0.157:3001"); // we use ws (WebSocket) here
-// The io object (the socket.io client library) is now globally available in the browser
 
 // We're ready to listen to events
 socket.on("message", (message) => {
@@ -46,7 +46,6 @@ socket.on("cpuUsage", (package) => {
 });
 
 let timers = {}; // Object to contain all timers for deleting not updated data on page
-
 socket.on("sysData", (sysData) => {
   if (!timers[sysData.id]) {
     timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info

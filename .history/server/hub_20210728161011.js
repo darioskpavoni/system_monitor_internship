@@ -1,12 +1,12 @@
 // This code is the BACK-END!
 
 // HTTP server with EXPRESS
-import express from "express";
+const express = require("express");
 const app = express();
-import http from "http";
+const http = require("http");
 const server = http.createServer(app);
 
-import path from "path";
+const path = require("path");
 const publicPath = path.join(__dirname, "../static/views");
 
 app.use("/static", express.static("../static"));
