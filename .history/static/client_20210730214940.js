@@ -1,4 +1,4 @@
-const echarts = require("echarts");
+import * as echarts from ".\node_modulesechartsdistecharts.min.js";
 
 // initialize the echarts instance
 var myChart = echarts.init(document.getElementById("main"));

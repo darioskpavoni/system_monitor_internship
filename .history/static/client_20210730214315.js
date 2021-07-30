@@ -1,4 +1,4 @@
-const echarts = require("echarts");
+import * as echarts from "echarts";
 
 // initialize the echarts instance
 var myChart = echarts.init(document.getElementById("main"));
@@ -31,6 +31,19 @@ socket.on("message", (message) => {
   /* console.log(msgElement); */
   document.getElementById("messages").appendChild(msgElement);
 }); // we listen to the 'message' event EMITTED BY THE SERVER
+
+// Displaying CPU usage on client side
+socket.on("cpuUsage", (package) => {
+  if (document.getElementById(package.id)) {
+    let el = document.getElementById(package.id);
+    el.innerHTML = package.cpuUsage;
+  } else if (!document.getElementById(package.id)) {
+    let newEl = document.createElement("li");
+    newEl.id = package.id;
+    newEl.innerHTML = package.cpuUsage;
+    document.getElementById("system").appendChild(newEl);
+  }
+});
 
 let timers = {}; // Object to contain all timers for deleting not updated data on page
 

@@ -187,33 +187,37 @@ process.umask = function() { return 0; };
 },{}],2:[function(require,module,exports){
 const echarts = require("echarts");
 
-// based on prepared DOM, initialize echarts instance
+// initialize the echarts instance
 var myChart = echarts.init(document.getElementById("main"));
-
-// specify chart configuration item and data
-var option = {
+// Draw the chart
+myChart.setOption({
   title: {
-    text: "ECharts entry example",
+    text: "ECharts Getting Started Example",
   },
   tooltip: {},
-  legend: {
-    data: ["Sales"],
-  },
   xAxis: {
-    data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
+    data: ["shirt", "cardigan", "chiffon", "pants", "heels", "socks"],
   },
   yAxis: {},
   series: [
     {
-      name: "Sales",
+      name: "sales",
       type: "bar",
       data: [5, 20, 36, 10, 10, 20],
     },
   ],
-};
+});
 
-// use configuration item and data specified to show chart
-myChart.setOption(option);
+const socket = io("ws://192.168.0.231:3001"); // we use ws (WebSocket) here
+// The io object (the socket.io client library) is now globally available in the browser
+
+// We're ready to listen to events
+socket.on("message", (message) => {
+  const msgElement = document.createElement("li");
+  msgElement.innerHTML = message;
+  /* console.log(msgElement); */
+  document.getElementById("messages").appendChild(msgElement);
+}); // we listen to the 'message' event EMITTED BY THE SERVER
 
 let timers = {}; // Object to contain all timers for deleting not updated data on page
 
