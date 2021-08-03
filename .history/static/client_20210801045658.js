@@ -27,7 +27,7 @@ socket.on("sysData", (sysData) => {
     // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one gets deleted and cleared, and so on.
     const t = timers[sysData.id].shift();
     clearTimeout(t);
-    /* console.log(`Clearing timer for ${sysData.id}`); */
+    console.log(`Clearing timer for ${sysData.id}`);
   }
 
   /* console.log(timers); */
@@ -83,6 +83,86 @@ socket.on("sysData", (sysData) => {
         <td class='RAMfree'>${sysData.RAM_free}</td>
         <td class='DISKused-container'>${usedDisk}</td>
         <td class='DISKfree-container'>${freeDisk}</td>`;
+  }
+
+  let chartId = `${sysData.id}CHART`;
+  if (!document.getElementById(chartId)) {
+    let newChart = document.createElement("div");
+    newChart.id = chartId;
+    newChart.style.width = "600px";
+    newChart.style.height = "400px";
+
+    var base = +new Date(2021, 7, 30);
+    var thirtySec = 60 * 1000;
+    var date = [1, 2, 3, 4, 5];
+
+    var data = sysData.CPU_usage;
+
+    option = {
+      tooltip: {
+        trigger: "axis",
+        position: function (pt) {
+          return [pt[0], "10%"];
+        },
+      },
+      title: {
+        left: "center",
+        text: "CPU usage",
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: "none",
+          },
+          restore: {},
+          saveAsImage: {},
+        },
+      },
+      xAxis: {
+        type: "category",
+        boundaryGap: false,
+        data: date,
+      },
+      yAxis: {
+        type: "value",
+      },
+      dataZoom: [
+        {
+          type: "inside",
+          start: 0,
+          end: 10,
+        },
+        {
+          start: 0,
+          end: 10,
+        },
+      ],
+      series: [
+        {
+          name: "CPU usage",
+          type: "line",
+          symbol: "none",
+          sampling: "lttb",
+          itemStyle: {
+            color: "rgb(255, 70, 131)",
+          },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              {
+                offset: 0,
+                color: "rgb(255, 158, 68)",
+              },
+              {
+                offset: 1,
+                color: "rgb(255, 70, 131)",
+              },
+            ]),
+          },
+          data: data,
+        },
+      ],
+    };
+  } else if (document.getElementById(chartId)) {
   }
 
   // Display data in charts

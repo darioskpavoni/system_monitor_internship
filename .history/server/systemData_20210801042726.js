@@ -66,22 +66,19 @@ for (let i = 0; i < diskData.length; i++) {
 // Object for system data
 let sysData = {
   id: Date.now(),
-  CPU_usage: [0],
+  CPU_usage: [],
   RAM_usage: `${random0_100()}%`,
   RAM_free: `${random0_100() * 0.08}GB`, // random numbers
   DISK_used: diskUsed,
   DISK_free: diskFree,
 };
 
+sysData.CPU_usage.length = 5;
+
 // Function to refresh system data except ID
 const sysDataRefresh = (sysData) => {
   cpuUsage((v) => {
-    if (sysData.CPU_usage.length < 5) {
-      sysData.CPU_usage.push(parseFloat((v * 100).toFixed(1))); // Outputing CPU usage as a float rather than a string
-    } else if ((sysData.CPU_usage.length = 5)) {
-      sysData.CPU_usage.shift();
-      sysData.CPU_usage.push(parseFloat((v * 100).toFixed(1)));
-    }
+    sysData.CPU_usage.push((v * 100).toFixed(1));
   });
   /* console.log(sysData.CPU_usage); */
   sysData.RAM_usage = `${(

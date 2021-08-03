@@ -77,7 +77,7 @@ let sysData = {
 const sysDataRefresh = (sysData) => {
   cpuUsage((v) => {
     if (sysData.CPU_usage.length < 5) {
-      sysData.CPU_usage.push(parseFloat((v * 100).toFixed(1))); // Outputing CPU usage as a float rather than a string
+      sysData.CPU_usage.push(parseFloat((v * 100).toFixed(1))); // Outputting
     } else if ((sysData.CPU_usage.length = 5)) {
       sysData.CPU_usage.shift();
       sysData.CPU_usage.push(parseFloat((v * 100).toFixed(1)));

@@ -1,3 +1,26 @@
+/* const echarts = require("echarts");
+
+// initialize the echarts instance
+var myChart = echarts.init(document.getElementById("main"));
+// Draw the chart
+myChart.setOption({
+  title: {
+    text: "ECharts Getting Started Example",
+  },
+  tooltip: {},
+  xAxis: {
+    data: ["shirt", "cardigan", "chiffon", "pants", "heels", "socks"],
+  },
+  yAxis: {},
+  series: [
+    {
+      name: "sales",
+      type: "bar",
+      data: [5, 20, 36, 10, 10, 20],
+    },
+  ],
+}); */
+
 const socket = io("ws://192.168.0.231:3001"); // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
@@ -27,7 +50,7 @@ socket.on("sysData", (sysData) => {
     // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one gets deleted and cleared, and so on.
     const t = timers[sysData.id].shift();
     clearTimeout(t);
-    /* console.log(`Clearing timer for ${sysData.id}`); */
+    console.log(`Clearing timer for ${sysData.id}`);
   }
 
   /* console.log(timers); */

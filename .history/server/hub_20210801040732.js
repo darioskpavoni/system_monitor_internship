@@ -1,9 +1,5 @@
 // This code is the BACK-END!
 
-// NOTE: When I get to local storage saving, I want the data to be saved through this file (basically in the server). Then whenever I get new data, I just overwrite the old with the new
-
-// TO DO NOW: Get the arrays of data to be display on the charts. Same concepts as for the table rows
-
 // HTTP server with EXPRESS
 import express from "express";
 const app = express();
@@ -42,8 +38,6 @@ io.on("connection", (socket) => {
     // we have multiple clients listening to the message event so we re-emit it
     io.emit("message", `${socket.id.substr(0, 2)} said ${message}`);
   });
-
-  let data = [];
 
   socket.on("sysData", (sysData) => {
     console.log(sysData);

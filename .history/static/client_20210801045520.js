@@ -27,7 +27,7 @@ socket.on("sysData", (sysData) => {
     // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one gets deleted and cleared, and so on.
     const t = timers[sysData.id].shift();
     clearTimeout(t);
-    /* console.log(`Clearing timer for ${sysData.id}`); */
+    console.log(`Clearing timer for ${sysData.id}`);
   }
 
   /* console.log(timers); */
@@ -83,6 +83,11 @@ socket.on("sysData", (sysData) => {
         <td class='RAMfree'>${sysData.RAM_free}</td>
         <td class='DISKused-container'>${usedDisk}</td>
         <td class='DISKfree-container'>${freeDisk}</td>`;
+  }
+
+  let chartId = `${sysData.id}CHART`;
+  if (!document.getElementById(chartId)) {
+  } else if (document.getElementById(chartId)) {
   }
 
   // Display data in charts

@@ -2,7 +2,7 @@
 
 // NOTE: When I get to local storage saving, I want the data to be saved through this file (basically in the server). Then whenever I get new data, I just overwrite the old with the new
 
-// TO DO NOW: Get the arrays of data to be display on the charts. Same concepts as for the table rows
+// TO DO NOW: Get the arrays of data to be display on the charts
 
 // HTTP server with EXPRESS
 import express from "express";
