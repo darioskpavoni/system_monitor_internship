@@ -35,7 +35,6 @@ socket.on("sysData", (sysData) => {
   // Display data in a table
   if (!document.getElementById(sysData.id)) {
     let container = document.createElement("div");
-    container.classList.add("client");
     document.body.appendChild(container);
     container.id = sysData.id;
 
@@ -83,7 +82,6 @@ socket.on("sysData", (sysData) => {
 
     // Creating chart space
     let graphsContainer = document.createElement("div");
-    graphsContainer.classList.add("graphsContainer");
     let newChart = document.createElement("div");
     newChart.style.width = "600px";
     newChart.style.height = "400px";
@@ -98,18 +96,22 @@ socket.on("sysData", (sysData) => {
 
     // specify chart configuration item and data
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };
@@ -146,21 +148,25 @@ socket.on("sysData", (sysData) => {
 
     // UPDATING DATA IN GRAPHS
     var myChart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`)
+      document.querySelector(`[id="${sysData.id}"] > graphsContainer .CPUgraph`)
     );
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };

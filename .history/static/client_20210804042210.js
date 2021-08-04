@@ -98,18 +98,22 @@ socket.on("sysData", (sysData) => {
 
     // specify chart configuration item and data
     var option = {
+      title: {
+        text: "CPU Usage [%}",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };
@@ -149,18 +153,22 @@ socket.on("sysData", (sysData) => {
       document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`)
     );
     var option = {
+      title: {
+        text: "CPU Usage [%}",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };

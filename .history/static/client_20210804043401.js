@@ -98,18 +98,17 @@ socket.on("sysData", (sysData) => {
 
     // specify chart configuration item and data
     var option = {
-      xAxis: {
-        type: "category",
+      title: {
+        text: "CPU Usage [%]",
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
+      legend: {
+        data: ["CPU Usage [%]"],
       },
+      yAxis: {},
       series: [
         {
-          data: sysData.CPU_usage,
           type: "line",
+          data: sysData.CPU_usage,
         },
       ],
     };
@@ -154,12 +153,10 @@ socket.on("sysData", (sysData) => {
       },
       yAxis: {
         type: "value",
-        min: 0,
-        max: 100,
       },
       series: [
         {
-          data: sysData.CPU_usage,
+          data: [120, 200, 150, 80, 70, 110, 130],
           type: "line",
         },
       ],

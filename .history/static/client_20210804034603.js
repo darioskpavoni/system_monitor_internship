@@ -35,12 +35,9 @@ socket.on("sysData", (sysData) => {
   // Display data in a table
   if (!document.getElementById(sysData.id)) {
     let container = document.createElement("div");
-    container.classList.add("client");
-    document.body.appendChild(container);
     container.id = sysData.id;
 
     let table = document.createElement("table");
-    table.classList.add("sysDataTable");
     container.appendChild(table);
 
     let tableHead = document.createElement("thead");
@@ -81,45 +78,44 @@ socket.on("sysData", (sysData) => {
 
     /* CREATING GRAPH */
 
-    // Creating chart space
-    let graphsContainer = document.createElement("div");
-    graphsContainer.classList.add("graphsContainer");
+    /* // Creating chart space
     let newChart = document.createElement("div");
     newChart.style.width = "600px";
     newChart.style.height = "400px";
-    newChart.classList.add("CPUgraph");
-    graphsContainer.appendChild(newChart);
-    container.appendChild(graphsContainer);
+    newChart.classList.add(sysData.id);
+    container.appendChild(newChart);
 
     // based on prepared DOM, initialize echarts instance
     var myChart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .CPUgraph`)
+      document.querySelector(`[class="${sysData.id}"]`)
     );
 
     // specify chart configuration item and data
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };
 
     // use configuration item and data specified to show chart
-    myChart.setOption(option);
+    myChart.setOption(option); */
   } else if (document.getElementById(sysData.id)) {
-    let row = document.querySelector(
-      `[id="${sysData.id}"] > table > tbody > tr`
-    );
+    let row = document.getElementById(sysData.id);
 
     /* Disk Data Formatting */
 
@@ -146,21 +142,25 @@ socket.on("sysData", (sysData) => {
 
     // UPDATING DATA IN GRAPHS
     var myChart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`)
+      document.querySelector(`[class="${sysData.id}"]`)
     );
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };

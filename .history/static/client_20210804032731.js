@@ -34,17 +34,14 @@ socket.on("sysData", (sysData) => {
 
   // Display data in a table
   if (!document.getElementById(sysData.id)) {
-    let container = document.createElement("div");
-    container.classList.add("client");
-    document.body.appendChild(container);
-    container.id = sysData.id;
+    let externalContainer = document.createElement("div");
+    externalContainer.id(sysData.id);
+    let tableRow = document.querySelector(".sysDataTableRow");
 
     let table = document.createElement("table");
     table.classList.add("sysDataTable");
-    container.appendChild(table);
 
     let tableHead = document.createElement("thead");
-    table.appendChild(tableHead);
     tableHead.innerHTML = `<tr>
     <th scope="col">User ID</th>
     <th scope="col">CPU Usage</th>
@@ -66,50 +63,50 @@ socket.on("sysData", (sysData) => {
       freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
     }
 
-    let tableBody = document.createElement("tbody");
-    table.appendChild(tableBody);
-
     let row = document.createElement("tr");
-    row.innerHTML = `<th scope="row">${sysData.id}</th>
+    newRow.innerHTML = `<th scope="row">${sysData.id}</th>
         <td class='CPU'>${sysData.CPU_usage.slice(-1).pop()}%</td>
         <td class='RAMused'>${sysData.RAM_usage}</td>
         <td class='RAMfree'>${sysData.RAM_free}</td>
         <td class='DISKused-container'>${usedDisk}</td>
         <td class='DISKfree-container'>${freeDisk}</td>`;
 
-    tableBody.appendChild(row);
+    tableRow.appendChild(row);
+    externalContainer.appendChild(tableRow);
 
     /* CREATING GRAPH */
 
     // Creating chart space
-    let graphsContainer = document.createElement("div");
-    graphsContainer.classList.add("graphsContainer");
+    let container = document.querySelector(".sysDataGraphs");
     let newChart = document.createElement("div");
     newChart.style.width = "600px";
     newChart.style.height = "400px";
-    newChart.classList.add("CPUgraph");
-    graphsContainer.appendChild(newChart);
-    container.appendChild(graphsContainer);
+    newChart.classList.add(sysData.id);
+    container.appendChild(newChart);
 
     // based on prepared DOM, initialize echarts instance
     var myChart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .CPUgraph`)
+      document.querySelector(`[class="${sysData.id}"]`)
     );
 
     // specify chart configuration item and data
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };
@@ -117,9 +114,7 @@ socket.on("sysData", (sysData) => {
     // use configuration item and data specified to show chart
     myChart.setOption(option);
   } else if (document.getElementById(sysData.id)) {
-    let row = document.querySelector(
-      `[id="${sysData.id}"] > table > tbody > tr`
-    );
+    let row = document.getElementById(sysData.id);
 
     /* Disk Data Formatting */
 
@@ -146,21 +141,25 @@ socket.on("sysData", (sysData) => {
 
     // UPDATING DATA IN GRAPHS
     var myChart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`)
+      document.querySelector(`[class="${sysData.id}"]`)
     );
     var option = {
+      title: {
+        text: "ECharts entry example",
+      },
+      tooltip: {},
+      legend: {
+        data: ["Sales"],
+      },
       xAxis: {
-        type: "category",
+        data: ["shirt", "cardign", "chiffon shirt", "pants", "heels", "socks"],
       },
-      yAxis: {
-        type: "value",
-        min: 0,
-        max: 100,
-      },
+      yAxis: {},
       series: [
         {
+          name: "Sales",
+          type: "bar",
           data: sysData.CPU_usage,
-          type: "line",
         },
       ],
     };
