@@ -1,0 +1,16 @@
+body { 
+    width: 100%;
+}
+.client {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+.sysDataTable {
+    width: 50%;
+    margin: 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
