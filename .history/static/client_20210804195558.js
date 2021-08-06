@@ -1,4 +1,3 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const socket = io("ws://192.168.0.231:3001"); // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
@@ -38,18 +37,8 @@ socket.on("sysData", (sysData) => {
       text: "CPU Usage [%]",
       left: "center",
     },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "cross",
-        label: {
-          backgroundColor: "#6a7985",
-        },
-      },
-    },
     xAxis: {
       type: "category",
-      boundaryGap: false,
     },
     yAxis: {
       type: "value",
@@ -58,18 +47,6 @@ socket.on("sysData", (sysData) => {
     },
     series: [
       {
-        name: "CPU Usage",
-        type: "line",
-        label: {
-          show: true,
-          position: "top",
-        },
-        areaStyle: {
-          color: "green",
-        },
-        areaStyle: {
-          color: "#A3D8EC",
-        },
         data: sysData.CPU_usage,
         type: "line",
       },
@@ -80,10 +57,9 @@ socket.on("sysData", (sysData) => {
   const RAMchart_option = {
     title: {
       text: "RAM Usage [%]",
-      padding: 0,
       left: "center",
       textStyle: {
-        fontSize: 15,
+        fontSize: 12,
       },
     },
     tooltip: {
@@ -95,7 +71,7 @@ socket.on("sysData", (sysData) => {
     },
     series: [
       {
-        name: "RAM Usage",
+        name: "RAM usage",
         type: "pie",
         radius: ["40%", "70%"],
         avoidLabelOverlap: false,
@@ -111,7 +87,7 @@ socket.on("sysData", (sysData) => {
         emphasis: {
           label: {
             show: true,
-            fontSize: "20",
+            fontSize: "40",
             fontWeight: "bold",
           },
         },
@@ -121,7 +97,7 @@ socket.on("sysData", (sysData) => {
         data: [
           {
             value: sysData.RAM_usage[1],
-            name: `Used`, // If I change this to sysData.RAM_usage[0] to see the actual GBs, the charts starts behaving strangely
+            name: `Used`,
           },
           {
             value: sysData.RAM_free[1],
@@ -131,81 +107,6 @@ socket.on("sysData", (sysData) => {
       },
     ],
   };
-
-  // DISKchart configuration
-  const DISKchart_option = {
-    title: {
-      text: "Partition Usage [GB]",
-      padding: 0,
-      left: "center",
-      textStyle: {
-        fontSize: 15,
-      },
-    },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        // Use axis to trigger tooltip
-        type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
-      },
-    },
-    legend: {
-      data: ["Used Space", "Free Space"],
-      top: "5%",
-      left: "center",
-    },
-    grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "3%",
-      containLabel: true,
-    },
-    xAxis: {
-      type: "value",
-    },
-    yAxis: {
-      type: "category",
-      data: [], // !! DONE
-    },
-    series: [
-      {
-        name: "Used Space",
-        type: "bar",
-        stack: "total",
-        label: {
-          show: true,
-        },
-        emphasis: {
-          focus: "series",
-        },
-        data: [], // !!
-      },
-      {
-        name: "Free Space",
-        type: "bar",
-        stack: "total",
-        label: {
-          show: true,
-        },
-        emphasis: {
-          focus: "series",
-        },
-        data: [], // !!
-      },
-    ],
-  };
-  for (let i = 0; i < sysData.DISK_used.length; i++) {
-    DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-  }
-  for (let i = 0; i < DISKchart_option.series.length; i++) {
-    for (let j = 0; j < sysData.DISK_used.length; j++) {
-      if (i == 0) {
-        DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-      } else if (i == 1) {
-        DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-      }
-    }
-  }
 
   // Display data in a table
   if (!document.getElementById(sysData.id)) {
@@ -278,46 +179,16 @@ socket.on("sysData", (sysData) => {
     /* ------------------------------------------ */
     /* RAM CHART */
     let newChart2 = document.createElement("div");
-    newChart2.style.width = "300px";
-    newChart2.style.height = "300px";
+    newChart2.style.width = "400px";
+    newChart2.style.height = "250px";
     newChart2.classList.add("RAMgraph");
-    let RAM_DISK_container = document.createElement("div");
-    RAM_DISK_container.classList.add("RAMDISKContainer");
-    RAM_DISK_container.appendChild(newChart2);
-    graphsContainer.appendChild(RAM_DISK_container);
+    graphsContainer.appendChild(newChart2);
 
     const RAMchart = echarts.init(
       document.querySelector(`[id="${sysData.id}"] .RAMgraph`)
     );
-    /* ------------------------------------------ */
-    /* DISK CHART */
-    let newChart3 = document.createElement("div");
-    newChart3.style.width = "300px";
-    newChart3.style.height = "300px";
-    newChart3.classList.add("DISKgraph");
-    RAM_DISK_container.appendChild(newChart3);
 
-    const DISKchart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .DISKgraph`)
-    );
-
-    DISKchart_option.yAxis.data = [];
-    for (let i = 0; i < sysData.DISK_used.length; i++) {
-      DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-    }
-
-    for (let i = 0; i < DISKchart_option.series.length; i++) {
-      DISKchart_option.series[i].data = [];
-      for (let j = 0; j < sysData.DISK_used.length; j++) {
-        if (i == 0) {
-          DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-        } else if (i == 1) {
-          DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-        }
-      }
-    }
-
-    DISKchart.setOption(DISKchart_option);
+    RAMchart.setOption(RAMchart_option);
   } else if (document.getElementById(sysData.id)) {
     let row = document.querySelector(
       `[id="${sysData.id}"] > table > tbody > tr`
@@ -359,29 +230,5 @@ socket.on("sysData", (sysData) => {
     );
 
     RAMchart.setOption(RAMchart_option);
-    // DISK CHART
-    const DISKchart = echarts.init(
-      document.querySelector(`[id="${sysData.id}"] .graphsContainer .DISKgraph`)
-    );
-
-    DISKchart_option.yAxis.data = [];
-    for (let i = 0; i < sysData.DISK_used.length; i++) {
-      DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-    }
-
-    for (let i = 0; i < DISKchart_option.series.length; i++) {
-      DISKchart_option.series[i].data = [];
-      for (let j = 0; j < sysData.DISK_used.length; j++) {
-        if (i == 0) {
-          DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-        } else if (i == 1) {
-          DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-        }
-      }
-    }
-
-    DISKchart.setOption(DISKchart_option);
   }
 });
-
-},{}]},{},[1]);

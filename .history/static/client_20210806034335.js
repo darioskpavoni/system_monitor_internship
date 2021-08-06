@@ -1,4 +1,3 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const socket = io("ws://192.168.0.231:3001"); // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
@@ -38,18 +37,8 @@ socket.on("sysData", (sysData) => {
       text: "CPU Usage [%]",
       left: "center",
     },
-    tooltip: {
-      trigger: "axis",
-      axisPointer: {
-        type: "cross",
-        label: {
-          backgroundColor: "#6a7985",
-        },
-      },
-    },
     xAxis: {
       type: "category",
-      boundaryGap: false,
     },
     yAxis: {
       type: "value",
@@ -58,18 +47,6 @@ socket.on("sysData", (sysData) => {
     },
     series: [
       {
-        name: "CPU Usage",
-        type: "line",
-        label: {
-          show: true,
-          position: "top",
-        },
-        areaStyle: {
-          color: "green",
-        },
-        areaStyle: {
-          color: "#A3D8EC",
-        },
         data: sysData.CPU_usage,
         type: "line",
       },
@@ -80,7 +57,6 @@ socket.on("sysData", (sysData) => {
   const RAMchart_option = {
     title: {
       text: "RAM Usage [%]",
-      padding: 0,
       left: "center",
       textStyle: {
         fontSize: 15,
@@ -95,7 +71,7 @@ socket.on("sysData", (sysData) => {
     },
     series: [
       {
-        name: "RAM Usage",
+        name: "RAM usage",
         type: "pie",
         radius: ["40%", "70%"],
         avoidLabelOverlap: false,
@@ -121,7 +97,7 @@ socket.on("sysData", (sysData) => {
         data: [
           {
             value: sysData.RAM_usage[1],
-            name: `Used`, // If I change this to sysData.RAM_usage[0] to see the actual GBs, the charts starts behaving strangely
+            name: `Used`,
           },
           {
             value: sysData.RAM_free[1],
@@ -135,8 +111,7 @@ socket.on("sysData", (sysData) => {
   // DISKchart configuration
   const DISKchart_option = {
     title: {
-      text: "Partition Usage [GB]",
-      padding: 0,
+      text: "Partition usage",
       left: "center",
       textStyle: {
         fontSize: 15,
@@ -150,7 +125,7 @@ socket.on("sysData", (sysData) => {
       },
     },
     legend: {
-      data: ["Used Space", "Free Space"],
+      data: ["Used space", "Free Space"],
       top: "5%",
       left: "center",
     },
@@ -281,10 +256,7 @@ socket.on("sysData", (sysData) => {
     newChart2.style.width = "300px";
     newChart2.style.height = "300px";
     newChart2.classList.add("RAMgraph");
-    let RAM_DISK_container = document.createElement("div");
-    RAM_DISK_container.classList.add("RAMDISKContainer");
-    RAM_DISK_container.appendChild(newChart2);
-    graphsContainer.appendChild(RAM_DISK_container);
+    graphsContainer.appendChild(newChart2);
 
     const RAMchart = echarts.init(
       document.querySelector(`[id="${sysData.id}"] .RAMgraph`)
@@ -295,7 +267,7 @@ socket.on("sysData", (sysData) => {
     newChart3.style.width = "300px";
     newChart3.style.height = "300px";
     newChart3.classList.add("DISKgraph");
-    RAM_DISK_container.appendChild(newChart3);
+    graphsContainer.appendChild(newChart3);
 
     const DISKchart = echarts.init(
       document.querySelector(`[id="${sysData.id}"] .DISKgraph`)
@@ -383,5 +355,3 @@ socket.on("sysData", (sysData) => {
     DISKchart.setOption(DISKchart_option);
   }
 });
-
-},{}]},{},[1]);

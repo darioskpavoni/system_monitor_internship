@@ -31,7 +31,7 @@ for (let j = 0; j < temp.length; j++) {
     diskData.push([
       `${temp[j][1]}`, // Partition letter
       `${temp[j][19]}`, // Partition name
-      `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}`, // Partition free space GB
+      `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}GB`, // Partition free space GB
       `${(temp[j][14] / Math.pow(1024, 3)).toFixed(1)}`, // Partition total space GB
       `${(
         (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
@@ -58,7 +58,7 @@ for (let i = 0; i < diskData.length; i++) {
 // Selecting disk free data
 let diskFree = [];
 for (let i = 0; i < diskData.length; i++) {
-  diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
+  diskFree.push([`${diskData[i][0]}`, `${diskData[i][2]}`]);
 }
 /* console.log(diskFree); */
 /* --------------------------------------------- */
@@ -117,7 +117,7 @@ const sysDataRefresh = (sysData) => {
       diskData.push([
         `${temp[j][1]}`, // Partition letter
         `${temp[j][19]}`, // Partition name
-        `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}`, // Partition free space GB
+        `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}GB`, // Partition free space GB
         `${(temp[j][14] / Math.pow(1024, 3)).toFixed(1)}`, // Partition total space GB
         `${(
           (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
@@ -139,13 +139,13 @@ const sysDataRefresh = (sysData) => {
   for (let i = 0; i < diskData.length; i++) {
     diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
   }
-  /* console.log(diskUsed); */
+  console.log(diskUsed);
   sysData.DISK_used = diskUsed;
 
   // DISK FREE
   diskFree = [];
   for (let i = 0; i < diskData.length; i++) {
-    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
+    diskFree.push([`${diskData[i][0]}`, `${diskData[i][2]}`]);
   }
   sysData.DISK_free = diskFree;
 };
@@ -157,7 +157,7 @@ socket.on("connect", () => {
     // Emit data
     socket.emit("sysData", sysData);
     /* socket.emit('test', sysData); */
-    console.log(sysData);
+    /* console.log(sysData); */
     console.log(`${new Date()} - Sending system data...`);
   }, 2500);
 });

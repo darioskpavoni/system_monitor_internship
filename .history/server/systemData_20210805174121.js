@@ -58,7 +58,7 @@ for (let i = 0; i < diskData.length; i++) {
 // Selecting disk free data
 let diskFree = [];
 for (let i = 0; i < diskData.length; i++) {
-  diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
+  diskFree.push([`${diskData[i][0]}`, `${diskData[i][2]}`]);
 }
 /* console.log(diskFree); */
 /* --------------------------------------------- */
@@ -145,7 +145,7 @@ const sysDataRefresh = (sysData) => {
   // DISK FREE
   diskFree = [];
   for (let i = 0; i < diskData.length; i++) {
-    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
+    diskFree.push([`${diskData[i][0]}`, `${diskData[i][2]}`]);
   }
   sysData.DISK_free = diskFree;
 };
