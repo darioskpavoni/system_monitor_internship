@@ -51,9 +51,7 @@ for (let j = 0; j < temp.length; j++) {
 // Selecting disk used data
 let diskUsed = [];
 for (let i = 0; i < diskData.length; i++) {
-  if (!isNaN(parseFloat(diskData[i][5]))) {
-    diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
-  }
+  diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
 }
 /* console.log(diskUsed); */
 
@@ -139,9 +137,7 @@ const sysDataRefresh = (sysData) => {
   // DISK USED
   diskUsed = []; // Emptying the array otherwise we get duplicated data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][5]))) {
-      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
-    }
+    diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
   }
   /* console.log(diskUsed); */
   sysData.DISK_used = diskUsed;
