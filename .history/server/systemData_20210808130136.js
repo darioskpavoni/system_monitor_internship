@@ -75,9 +75,6 @@ if (kernel === "Windows") {
   }
 }
 // END OF WINDOWS
-// LINUX
-
-// END OF LINUX
 
 // Object for system data
 let sysData = {
@@ -174,6 +171,7 @@ socket.on("connect", () => {
     sysDataRefresh(sysData);
     // Emit data
     socket.emit("sysData", sysData);
+    /* socket.emit('test', sysData); */
     console.log(sysData);
     console.log(`${new Date()} - Sending system data...`);
   }, 2500);
