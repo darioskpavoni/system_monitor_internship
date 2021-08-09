@@ -57,7 +57,7 @@ if (isWin) {
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
     if (!isNaN(parseFloat(diskData[i][5]))) {
-      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
+      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
     }
   }
   /* console.log(diskUsed); */
