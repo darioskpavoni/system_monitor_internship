@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-const socket = io("http://192.168.0.157:3001");
+const socket = io("http://192.168.0.231:3001");
 
 // For Disk Info command
 import { execSync } from "child_process";
@@ -65,9 +65,7 @@ if (kernel === "Windows") {
   }
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][5]))) {
-      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
-    }
+    diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][5])]);
   }
   /* console.log(diskUsed); */
 
