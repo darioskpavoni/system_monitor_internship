@@ -1,4 +1,3 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const socket = io("ws://192.168.0.167:3001"); // we use ws (WebSocket) here
 // The io object (the socket.io client library) is now globally available in the browser
 
@@ -328,12 +327,12 @@ socket.on("sysData", (sysData) => {
     // Used disk
     let usedDisk = "";
     for (let i = 0; i < sysData.DISK_used.length; i++) {
-      usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`;
+      usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}%<br>`;
     }
     // Free disk
     let freeDisk = "";
     for (let i = 0; i < sysData.DISK_free.length; i++) {
-      freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
+      freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
     }
     /*  */
 
@@ -343,8 +342,8 @@ socket.on("sysData", (sysData) => {
         <td class='CPUload'>${sysData.CPU_usage.slice(-1).pop()}%</td>
         <td class='RAMused'>${sysData.RAM_usage[1]}%</td>
         <td class='RAMfree'>${sysData.RAM_free[0]}GB</td>
-        <td class='DISKused-container'>${usedDisk}</td>
-        <td class='DISKfree-container'>${freeDisk}</td>`;
+        <td class='DISKused-container'>${usedDisk}GB</td>
+        <td class='DISKfree-container'>${freeDisk}GB</td>`;
 
     // UPDATING DATA IN GRAPHS
     // CPU CHART
@@ -383,5 +382,3 @@ socket.on("sysData", (sysData) => {
     DISKchart.setOption(DISKchart_option);
   }
 });
-
-},{}]},{},[1]);
