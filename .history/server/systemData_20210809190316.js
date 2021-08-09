@@ -10,7 +10,8 @@ import { parse } from "path";
 
 /* IDENTIFY CURRENT OS */
 const isWin = process.platform === "win32";
-const isLinux = process.platform === "linux";
+const isLinux = process.platform === "darwin";
+const kernelVersion = os.version();
 /* ------------------- */
 
 /* DISK INFO DATA FIRST CALCULATION */
@@ -139,7 +140,7 @@ console.log(sysData);
 
 // Function to refresh system data except ID
 const sysDataRefresh = (sysData) => {
-  if (isWin) {
+  if (kernel === "Windows") {
     // CPU USAGE
     cpuUsage((v) => {
       if (sysData.CPU_usage.length < 5) {
@@ -213,7 +214,7 @@ const sysDataRefresh = (sysData) => {
       diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
     sysData.DISK_free = diskFree;
-  } else if (isLinux) {
+  } else if (kernel === "Linux") {
     // CPU USAGE
     cpuUsage((v) => {
       if (sysData.CPU_usage.length < 5) {

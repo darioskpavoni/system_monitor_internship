@@ -10,7 +10,8 @@ import { parse } from "path";
 
 /* IDENTIFY CURRENT OS */
 const isWin = process.platform === "win32";
-const isLinux = process.platform === "linux";
+const isLinux = process.platform === "darwin";
+const kernelVersion = os.version();
 /* ------------------- */
 
 /* DISK INFO DATA FIRST CALCULATION */

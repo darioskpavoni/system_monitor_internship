@@ -213,7 +213,7 @@ const sysDataRefresh = (sysData) => {
       diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
     sysData.DISK_free = diskFree;
-  } else if (isLinux) {
+  } else if (kernel === "Linux") {
     // CPU USAGE
     cpuUsage((v) => {
       if (sysData.CPU_usage.length < 5) {

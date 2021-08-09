@@ -11,13 +11,23 @@ import { parse } from "path";
 /* IDENTIFY CURRENT OS */
 const isWin = process.platform === "win32";
 const isLinux = process.platform === "linux";
+console.log(isWin, isLinux);
+const kernelVersion = os.version();
+let kernel = "";
+if (kernelVersion.includes("Windows")) {
+  // 'includes' for scripts like this, 'contains' for DOM content
+  kernel = "Windows";
+} else if (kernelVersion.includes("Ubuntu")) {
+  // must change here to include all versions
+  kernel = "Linux";
+}
 /* ------------------- */
 
 /* DISK INFO DATA FIRST CALCULATION */
 let diskUsed = [];
 let diskFree = [];
 // WINDOWS
-if (isWin) {
+if (kernel === "Windows") {
   const output = execSync("wmic logicaldisk", { encoding: "utf-8" });
 
   const parsedOutput = output.split(/\r?\n/);
@@ -69,7 +79,7 @@ if (isWin) {
 }
 // END OF WINDOWS
 // LINUX
-else if (isLinux) {
+else if (kernel === "Linux") {
   const output = execSync("df -h | grep ^/dev", { encoding: "utf-8" });
   let parsedOutput = output.split(/\n/);
 
@@ -139,7 +149,7 @@ console.log(sysData);
 
 // Function to refresh system data except ID
 const sysDataRefresh = (sysData) => {
-  if (isWin) {
+  if (kernel === "Windows") {
     // CPU USAGE
     cpuUsage((v) => {
       if (sysData.CPU_usage.length < 5) {
@@ -213,7 +223,7 @@ const sysDataRefresh = (sysData) => {
       diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
     sysData.DISK_free = diskFree;
-  } else if (isLinux) {
+  } else if (kernel === "Linux") {
     // CPU USAGE
     cpuUsage((v) => {
       if (sysData.CPU_usage.length < 5) {

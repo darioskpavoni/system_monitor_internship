@@ -233,12 +233,12 @@ socket.on("sysData", (sysData) => {
     // Used disk
     let usedDisk = "";
     for (let i = 0; i < sysData.DISK_used.length; i++) {
-      usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}%<br>`; // this is actually the free space
+      usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`; // this is actually the free space
     }
     // Free disk
     let freeDisk = "";
     for (let i = 0; i < sysData.DISK_free.length; i++) {
-      freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}<br>`;
+      freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
     }
 
     let tableBody = document.createElement("tbody");
