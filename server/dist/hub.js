@@ -4,17 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var http_1 = __importDefault(require("http"));
-var url_1 = require("url"); /* When using Node.js, __dirname doesn't exist. I need to use this code to define it */
-var path_1 = require("path");
-var path_2 = __importDefault(require("path"));
-var socket_io_1 = require("socket.io");
-// This code is the BACK-END!
-// HTTP server with EXPRESS
 var app = express_1.default();
+var http_1 = __importDefault(require("http"));
 var server = http_1.default.createServer(app);
-var __filename = url_1.fileURLToPath(import.meta.url);
+var path_1 = require("path");
+var socket_io_1 = require("socket.io");
+var __filename = process.cwd() + "\\hub.js";
 var __dirname = path_1.dirname(__filename);
+var path_2 = __importDefault(require("path"));
 var publicPath = path_2.default.join(__dirname, "../static/views");
 app.use("/static", express_1.default.static("../static"));
 app.get("/", function (req, res) {
@@ -33,14 +30,7 @@ io.on("connection", function (socket) {
         // we have multiple clients listening to the message event so we re-emit it
         io.emit("message", socket.id.substr(0, 2) + " said " + message);
     });
-    // getting cpuUsage from client side
-    /* socket.on('cpuUsage', (package) => {
-          console.log(`${package.id} said ${package.cpuUsage}`);
-          io.emit('cpuUsage', package);
-      }) */
-    /* socket.on('test', (message) => {
-          console.log(message);
-      }) */
+    var data = [];
     socket.on("sysData", function (sysData) {
         console.log(sysData);
         io.emit("sysData", sysData);
