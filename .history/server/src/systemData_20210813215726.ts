@@ -33,8 +33,7 @@ if (isWin) {
   for (let j = 0; j < temp.length; j++) {
     temp[j] = temp[j].split(" ");
     let partitionName = temp[j][19];
-    temp[j][14] = parseFloat(temp[j][14]);
-    temp[j][14] = parseFloat(temp[j][10]);
+    
     if (partitionName != undefined) {
       diskData.push([
         `${temp[j][1] as string}`, // Partition letter
@@ -42,15 +41,15 @@ if (isWin) {
         `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}`, // Partition free space GB
         `${(temp[j][14] / Math.pow(1024, 3)).toFixed(1)}`, // Partition total space GB
         `${(
-          <any>(temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
-          <any>(temp[j][10] / Math.pow(1024, 3)).toFixed(1)
+          (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
+          (temp[j][10] / Math.pow(1024, 3)).toFixed(1)
         ).toFixed(1)}`, // Partition used space GB
         `${(
-          (<any>(
-            <any>(temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
-            <any>(temp[j][10] / Math.pow(1024, 3)).toFixed(1)
+          ((
+            (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
+            (temp[j][10] / Math.pow(1024, 3)).toFixed(1)
           ).toFixed(1) /
-          <any>(temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
+            (temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
           100
         ).toFixed(1)}`, // Calculation of used space in %: ((used in GB)/(total in GB))*100)
       ]);

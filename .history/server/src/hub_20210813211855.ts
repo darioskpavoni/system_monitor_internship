@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     io.emit("sysData", sysData);
   });
 
-  socket.on("disconnect", (sysData: any) => {
+  socket.on("disconnect", (sysData) => {
     let disconnectedUserId = sysData.id;
     console.log(`User ${disconnectedUserId} disconnected`);
     io.emit("disconnectedUser", disconnectedUserId);
