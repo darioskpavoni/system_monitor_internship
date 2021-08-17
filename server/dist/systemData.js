@@ -30,6 +30,8 @@ if (isWin) {
     for (var j = 0; j < temp.length; j++) {
         temp[j] = temp[j].split(" ");
         var partitionName = temp[j][19];
+        temp[j][14] = parseFloat(temp[j][14]);
+        temp[j][14] = parseFloat(temp[j][10]);
         if (partitionName != undefined) {
             diskData.push([
                 "" + temp[j][1],
@@ -54,7 +56,9 @@ if (isWin) {
     /* console.log(diskUsed); */
     // Selecting disk free data
     for (var i = 0; i < diskData.length; i++) {
-        diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
+        if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+            diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
+        }
     }
 }
 // END OF WINDOWS
@@ -99,18 +103,18 @@ else if (isLinux) {
     // console.log(diskData);
     // Selecting disk used data
     for (var i = 0; i < diskData.length; i++) {
-        if (!isNaN(parseFloat(diskData[i][4]))) {
+        if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
             diskUsed.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
         }
     }
     /* console.log(diskUsed); */
     // Selecting disk free data
     for (var i = 0; i < diskData.length; i++) {
-        diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][3])]);
+        if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
+            diskUsed.push(["" + diskData[i][0], parseFloat(diskData[i][3])]);
+        }
     }
 }
-// END OF LINUX
-// Object for system data
 var sysData = {
     id: Date.now(),
     CPU_usage: [0],
@@ -171,14 +175,18 @@ var sysDataRefresh = function (sysData) {
         // DISK USED
         diskUsed = []; // Emptying the array otherwise we get duplicated data
         for (var i = 0; i < diskData.length; i++) {
-            diskUsed.push(["" + diskData[i][0], parseFloat(diskData[i][4])]);
+            if (!isNaN(parseFloat(diskData[i][4])) && parseFloat(diskData[i][4]) !== 0) {
+                diskUsed.push(["" + diskData[i][0], parseFloat(diskData[i][4])]);
+            }
         }
         /* console.log(diskUsed); */
         sysData.DISK_used = diskUsed;
         // DISK FREE
         diskFree = [];
         for (var i = 0; i < diskData.length; i++) {
-            diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
+            if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+                diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
+            }
         }
         sysData.DISK_free = diskFree;
     }
@@ -240,7 +248,7 @@ var sysDataRefresh = function (sysData) {
         // Selecting disk used data
         diskUsed = [];
         for (var i = 0; i < diskData.length; i++) {
-            if (!isNaN(parseFloat(diskData[i][2]))) {
+            if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
                 diskUsed.push(["" + diskData[i][0], parseFloat(diskData[i][2])]);
             }
         }
@@ -249,7 +257,9 @@ var sysDataRefresh = function (sysData) {
         // Selecting disk free data
         diskFree = [];
         for (var i = 0; i < diskData.length; i++) {
-            diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][3])]);
+            if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
+                diskFree.push(["" + diskData[i][0], parseFloat(diskData[i][3])]);
+            }
         }
         sysData.DISK_free = diskFree;
     }

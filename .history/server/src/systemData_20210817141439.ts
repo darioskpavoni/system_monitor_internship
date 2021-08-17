@@ -14,8 +14,8 @@ const isLinux = process.platform === "linux";
 /* ------------------- */
 
 /* DISK INFO DATA FIRST CALCULATION */
-let diskUsed = [] as any[];
-let diskFree = [] as any[];
+let diskUsed = [];
+let diskFree = [];
 // WINDOWS
 if (isWin) {
   const output = execSync("wmic logicaldisk", { encoding: "utf-8" });
@@ -66,9 +66,7 @@ if (isWin) {
 
   // Selecting disk free data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
-      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
-    }
+    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
   }
 }
 // END OF WINDOWS
@@ -116,7 +114,7 @@ else if (isLinux) {
   // console.log(diskData);
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+    if (!isNaN(parseFloat(diskData[i][4]))) {
       diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
   }
@@ -124,24 +122,13 @@ else if (isLinux) {
 
   // Selecting disk free data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
-      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
-    }
+    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
   }
 }
 // END OF LINUX
 
-// Interface for system data
-
-interface IsysData {
-  id: number;
-  CPU_usage: number[];
-  RAM_usage: number[];
-  RAM_free: number[];
-  DISK_used: any[];
-  DISK_free: any[];
-}
-let sysData: IsysData = {
+// Object for system data
+let sysData = {
   id: Date.now(),
   CPU_usage: [0],
   RAM_usage: [0, 0], // first value is GB, second is %
@@ -153,7 +140,7 @@ let sysData: IsysData = {
 console.log(sysData);
 
 // Function to refresh system data except ID
-const sysDataRefresh = (sysData: IsysData) => {
+const sysDataRefresh = (sysData) => {
   if (isWin) {
     // CPU USAGE
     cpuUsage((v) => {
@@ -191,24 +178,24 @@ const sysDataRefresh = (sysData: IsysData) => {
 
     // Splits strings into array elements by space
     for (let j = 0; j < temp.length; j++) {
-      temp[j] = (<string>temp[j]).split(" ");
+      temp[j] = temp[j].split(" ");
       let partitionName = temp[j][19];
       if (partitionName != undefined) {
         diskData.push([
           `${temp[j][1]}`, // Partition letter
           `${temp[j][19]}`, // Partition name
-          `${(<any>temp[j][10] / Math.pow(1024, 3)).toFixed(1)}`, // Partition free space GB
-          `${(<any>temp[j][14] / Math.pow(1024, 3)).toFixed(1)}`, // Partition total space GB
+          `${(temp[j][10] / Math.pow(1024, 3)).toFixed(1)}`, // Partition free space GB
+          `${(temp[j][14] / Math.pow(1024, 3)).toFixed(1)}`, // Partition total space GB
           `${(
-            <any>(<any>temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
-            <any>(<any>temp[j][10] / Math.pow(1024, 3)).toFixed(1)
+            (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
+            (temp[j][10] / Math.pow(1024, 3)).toFixed(1)
           ).toFixed(1)}`, // Partition used space GB
           `${(
-            (<any>(
-              <any>(<any>temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
-              <any>(<any>temp[j][10] / Math.pow(1024, 3)).toFixed(1)
+            ((
+              (temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
+              (temp[j][10] / Math.pow(1024, 3)).toFixed(1)
             ).toFixed(1) /
-              <any>(<any>temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
+              (temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
             100
           ).toFixed(1)}`, // Calculation of used space in %: ((used in GB)/(total in GB))*100)
         ]);
@@ -217,9 +204,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // DISK USED
     diskUsed = []; // Emptying the array otherwise we get duplicated data
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][4])) && parseFloat(diskData[i][4]) !== 0) {
-        diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
-      }
+      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
     }
     /* console.log(diskUsed); */
     sysData.DISK_used = diskUsed;
@@ -227,9 +212,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // DISK FREE
     diskFree = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
-        diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
-      }
+      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
     sysData.DISK_free = diskFree;
   } else if (isLinux) {
@@ -258,8 +241,8 @@ const sysDataRefresh = (sysData: IsysData) => {
     let parsedOutput = output.split(/\n/);
 
     let temp = [];
-    let temp2 = [] as any[];
-    let diskData = [] as any[];
+    let temp2 = [];
+    let diskData = [];
 
     // Splitting in different elements based on whitespaces
     for (let j = 0; j < parsedOutput.length - 1; j++) {
@@ -297,7 +280,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // Selecting disk used data
     diskUsed = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+      if (!isNaN(parseFloat(diskData[i][2]))) {
         diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
       }
     }
@@ -307,9 +290,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // Selecting disk free data
     diskFree = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
-        diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
-      } 
+      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
     }
     sysData.DISK_free = diskFree;
   }

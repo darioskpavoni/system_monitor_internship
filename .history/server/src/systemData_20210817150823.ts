@@ -58,7 +58,7 @@ if (isWin) {
   }
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][5]))) {
+    if (!isNaN(parseFloat(diskData[i][4]))) {
       diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
     }
   }
@@ -66,9 +66,7 @@ if (isWin) {
 
   // Selecting disk free data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
-      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
-    }
+    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
   }
 }
 // END OF WINDOWS
@@ -116,7 +114,7 @@ else if (isLinux) {
   // console.log(diskData);
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+    if (!isNaN(parseFloat(diskData[i][2]))) {
       diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
   }
@@ -124,9 +122,7 @@ else if (isLinux) {
 
   // Selecting disk free data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
-      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
-    }
+    diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
   }
 }
 // END OF LINUX
@@ -217,7 +213,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // DISK USED
     diskUsed = []; // Emptying the array otherwise we get duplicated data
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][4])) && parseFloat(diskData[i][4]) !== 0) {
+      if (!isNaN(parseFloat(diskData[i][4]))) {
         diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
       }
     }
@@ -227,7 +223,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // DISK FREE
     diskFree = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+      if (!isNaN(parseFloat(diskData[i][2]))) {
         diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
       }
     }
@@ -297,7 +293,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // Selecting disk used data
     diskUsed = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
+      if (!isNaN(parseFloat(diskData[i][2]))) {
         diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
       }
     }
@@ -307,9 +303,7 @@ const sysDataRefresh = (sysData: IsysData) => {
     // Selecting disk free data
     diskFree = [];
     for (let i = 0; i < diskData.length; i++) {
-      if (!isNaN(parseFloat(diskData[i][3])) && parseFloat(diskData[i][3]) !== 0) {
-        diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
-      } 
+      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][3])]);
     }
     sysData.DISK_free = diskFree;
   }

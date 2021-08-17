@@ -58,7 +58,7 @@ if (isWin) {
   }
   // Selecting disk used data
   for (let i = 0; i < diskData.length; i++) {
-    if (!isNaN(parseFloat(diskData[i][5]))) {
+    if (!isNaN(parseFloat(diskData[i][4])) && parseFloat(diskData[i][4]) !== 0) {
       diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][4])]);
     }
   }
@@ -67,7 +67,7 @@ if (isWin) {
   // Selecting disk free data
   for (let i = 0; i < diskData.length; i++) {
     if (!isNaN(parseFloat(diskData[i][2])) && parseFloat(diskData[i][2]) !== 0) {
-      diskFree.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
+      diskUsed.push([`${diskData[i][0]}`, parseFloat(diskData[i][2])]);
     }
   }
 }
