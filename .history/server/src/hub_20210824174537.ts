@@ -10,28 +10,24 @@ const app = express();
 // creating an http server
 const server = http.createServer(app); 
 
-// getting to views folder (publicPath) from hub.ts file path
+// getting hub.js file path
 const __filename = process.cwd() + "\\hub.ts";
+// hub.js parent folder
 const __dirname = dirname(__filename);
 const publicPath = path.join(__dirname, "../static/views");
 
-// express.static() is used to manage static files (js, CSS, HTML) so that we can load them directly (eg. http://localhost:3000/static/css/style.css)
-// the first argument is the mount path for the static directory
 app.use("/static", express.static("../static"));
-// app.get() lets me define a route handler for GET requests to a given URL
 app.get("/", (req, res) => {
   res.sendFile(path.join(publicPath, "/index.html"));
 });
 
-/* Creating a socket.io server instance */
 const io = new Server(server, {
     cors: { origin: "*" },
   });
 
-// Handling socket.io events
 io.on('connection', (socket) => {
     console.log(`SERVER: User connected`)
-    // Most important event which triggers the creation of the client-side HTML
+    // EVENTS
     socket.on("sysData", (sysData) => {
         /* console.log(sysData); */
         io.emit("sysData", sysData);
@@ -42,8 +38,6 @@ io.on('connection', (socket) => {
     });
 })
 
-// Telling the server to listen to port 3001
-// 0.0.0.0 -> server will run on all available interfaces
 server.listen(3001, "0.0.0.0", () => {
     console.log("Listening to port: 3001");
   });

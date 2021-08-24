@@ -42,8 +42,6 @@ io.on('connection', (socket) => {
     });
 })
 
-// Telling the server to listen to port 3001
-// 0.0.0.0 -> server will run on all available interfaces
 server.listen(3001, "0.0.0.0", () => {
     console.log("Listening to port: 3001");
   });

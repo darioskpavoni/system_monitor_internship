@@ -31,7 +31,7 @@ const io = new Server(server, {
 // Handling socket.io events
 io.on('connection', (socket) => {
     console.log(`SERVER: User connected`)
-    // Most important event which triggers the creation of the client-side HTML
+    // EVENTS
     socket.on("sysData", (sysData) => {
         /* console.log(sysData); */
         io.emit("sysData", sysData);
@@ -42,8 +42,6 @@ io.on('connection', (socket) => {
     });
 })
 
-// Telling the server to listen to port 3001
-// 0.0.0.0 -> server will run on all available interfaces
 server.listen(3001, "0.0.0.0", () => {
     console.log("Listening to port: 3001");
   });
