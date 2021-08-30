@@ -82,26 +82,29 @@ const calculateDiskLinux = () => {
             }
         }
     }
-    
+    console.log(output1);
     // !! output0 is declared as any[] but it is a string[] initially. With string[] it's not possible to split each string element into an array of strings, because output0 would become an array of arrays 
 
-    // Emptying arrays to avoid redundancy
-    diskUsed = [];
-    diskFree = [];
+    
+
     // Selecting only elements of interest from output1
     for (let i = 0; i<output1.length; i++) {
         let partName: string = output1[i][0];
-        let partSizeGB: string = output1[i][1];
-        let partUsedSpaceGB: number = parseFloat(output1[i][2]);
-        let partFreeSpaceGB: number = parseFloat(output1[i][3]);
+        let partSizeGB: string = output1[i][1].slice(0, -1);
+        let partUsedSpaceGB: number = parseFloat(output1[i][2].slice(0, -1));
+        let partFreeSpaceGB: number = parseFloat(output1[i][3].slice(0, -1));
         let partUsedSpacePercent: number = parseFloat(output1[i][4]);
         let partFreeSpacePercent: number = 100-partUsedSpacePercent;
-        
+
+        // Emptying arrays to avoid redundancy
+        diskUsed = [];
+        diskFree = [];
         // Updating diskUsed and diskFree
-        if(partSizeGB.includes("G")) {
+        if(partSizeGB.includes("G") && !isNaN(partUsedSpaceGB) && partUsedSpaceGB !== 0 && !isNaN(partFreeSpaceGB) && partFreeSpaceGB !== 0) {
             diskUsed.push([partName, partUsedSpaceGB]);
             diskFree.push([partName, partFreeSpaceGB]);
         }
+
     }
 
 }

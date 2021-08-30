@@ -43,7 +43,7 @@ if (isWin) {
                 `${((((temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
                     (temp[j][10] / Math.pow(1024, 3)).toFixed(1)).toFixed(1) /
                     (temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
-                    100).toFixed(1)}`, // Calculation of used space in %: ((used in GB)/(total in GB))*100)
+                    100).toFixed(1)}`,
             ]);
         }
     }
@@ -168,7 +168,7 @@ const sysDataRefresh = (sysData) => {
                     `${((((temp[j][14] / Math.pow(1024, 3)).toFixed(1) -
                         (temp[j][10] / Math.pow(1024, 3)).toFixed(1)).toFixed(1) /
                         (temp[j][14] / Math.pow(1024, 3)).toFixed(1)) *
-                        100).toFixed(1)}`, // Calculation of used space in %: ((used in GB)/(total in GB))*100)
+                        100).toFixed(1)}`,
                 ]);
             }
         }

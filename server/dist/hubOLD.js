@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 });
 // Import socket.io with function which takes our http server as an argument
 const io = new socket_io_1.Server(server, {
-    cors: { origin: "*" }, // basically allowing any URL to access our back-end URL
+    cors: { origin: "*" },
 });
 // Logic for socket.io -> we have an EVENT-BASED system
 io.on("connection", (socket) => {

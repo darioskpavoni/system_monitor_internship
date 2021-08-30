@@ -88,6 +88,7 @@ const calculateDiskLinux = () => {
     // Emptying arrays to avoid redundancy
     diskUsed = [];
     diskFree = [];
+
     // Selecting only elements of interest from output1
     for (let i = 0; i<output1.length; i++) {
         let partName: string = output1[i][0];
@@ -96,6 +97,8 @@ const calculateDiskLinux = () => {
         let partFreeSpaceGB: number = parseFloat(output1[i][3]);
         let partUsedSpacePercent: number = parseFloat(output1[i][4]);
         let partFreeSpacePercent: number = 100-partUsedSpacePercent;
+
+        
         
         // Updating diskUsed and diskFree
         if(partSizeGB.includes("G")) {
