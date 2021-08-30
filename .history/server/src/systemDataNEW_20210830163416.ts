@@ -32,13 +32,12 @@ let sysData: IsysData = {
 /* DISK INFO */
 let diskUsed: diskInfo[] = [];
 let diskFree: diskInfo[] = [];
-// Calculation of disk info for Windows
 const calculateDiskWin = () => {
     // Command for partition info
-    const output: string = execSync("wmic logicaldisk", { encoding: "utf-8" });
+    const output = execSync("wmic logicaldisk", { encoding: "utf-8" });
     /* PARSING THE OUTPUT FROM THE COMMAND */
     // Splitting text on new lines
-    const output0: string[] = output.split(/\r?\n/);
+    const output0 = output.split(/\r?\n/);
     // Removing excessive whitespaces and replacing them with a single space. Array output1 contains data for each partition
     const output1 = [] as string[];
     for (let i = 1; i < output0.length - 2; i++) {
@@ -59,57 +58,13 @@ const calculateDiskWin = () => {
         let partTotalSpaceGB: number = parseFloat((output2[i][14]/Math.pow(1024,3)).toFixed(1))
         let partUsedSpaceGB: number = partTotalSpaceGB-partFreeSpaceGB;
         let partUsedSpacePercent: number = (partUsedSpaceGB/partTotalSpaceGB)/100
-        if (partLetter !== undefined && partUsedSpacePercent !== 0 && !isNaN(partUsedSpaceGB)) {
+        if (partLetter !== undefined && partUsedSpacePercent !== 0) {
             diskUsed.push([partLetter, partUsedSpaceGB]);
             diskFree.push([partLetter, partFreeSpaceGB]);
         }
     }
 }
-// Calculation of disk info for Linux
-const calculateDiskLinux = () => {
-    const output: string = execSync("df -h | grep ^/dev", { encoding: "utf-8" });
-    // Splitting output into strings by new line
-    let output0: any[] = output.split(/\n/);
-    // Splitting in different array elements based on whitespaces
-    for (let i = 0; i < output0.length - 1; i++) {
-        output0[i] = <string[][]>output0[i].split(" ");
-    }
-    // !! output0 is declared as any[] but it is a string[] initially. With string[] it's not possible to split each string element into an array of strings, because output0 would become an array of arrays 
-
-    // Selecting only non-empty elements from output0 and inserting them into output1
-    const output1 = [] as any[]
-    for (let i = 0; output0.length; i++) {
-        output1.push([]);
-        for (let j = 0; j<output0[i].length; j++) {
-            if (output0[i][j] !== "") {
-                output1[i].push(output0[i][j]);
-            }
-        }
-    }
-
-    // Selecting only elements of interest from output1
-    for (let i = 0; i<output1.length; i++) {
-        let partName: string = output1[i][0];
-        let partSizeGB: string = output1[i][1].slice(0, -1);
-        let partUsedSpaceGB: number = parseFloat(output1[i][2].slice(0, -1));
-        let partFreeSpaceGB: number = parseFloat(output1[i][3].slice(0, -1));
-        let partUsedSpacePercent: number = parseFloat(output1[i][4]);
-        let partFreeSpacePercent: number = 100-partUsedSpacePercent;
-
-        // Emptying arrays to avoid redundancy
-        diskUsed = [];
-        diskFree = [];
-        // Updating diskUsed and diskFree
-        if(partSizeGB.includes("G") && !isNaN(partUsedSpaceGB) && partUsedSpaceGB !== 0 && !isNaN(partFreeSpaceGB) && partFreeSpaceGB !== 0) {
-            diskUsed.push([partName, partUsedSpaceGB]);
-            diskFree.push([partName, partFreeSpaceGB]);
-        }
-
-    }
-
-}
-
-/* REFRESHING PARAMETERS */
+/* REFRESHING REST OF PARAMETERS (same for Win/Linux) */
 const refreshData = (sysData: IsysData) => {
     /* CPU USAGE */
     cpuUsage((value) => {
@@ -121,7 +76,6 @@ const refreshData = (sysData: IsysData) => {
             sysData.CPU_usage.push(currentCpuUsage);
         }
     })
-
     /* RAM */
     // Used
     let usedRAMGB: number = parseFloat(((totalmem() - freemem())/1000).toFixed(2));
@@ -135,24 +89,18 @@ const refreshData = (sysData: IsysData) => {
     // Emptying array to avoid redundancy
     sysData.RAM_free = [];
     sysData.RAM_free.push(freeRAMGB, freeRAMpercent);
-
     /* DISK */
-    if (isWin) {
-        calculateDiskWin();
-    } else if (isLinux) {
-        calculateDiskLinux();
-    }
+    calculateDiskWin();
     sysData.DISK_used = diskUsed;
     sysData.DISK_free = diskFree;
 }
 
-// socket.io logic
-socket.on("connect", () => {
-    setInterval(() =>{
-        // Calling function for system data refresh
-        refreshData(sysData);
-        // Emitting collected data
-        socket.emit("sysData", sysData);
-        console.log(sysData);
-    }, 2500);
-})
+// Windows
+if (isWin) {
+    // Calculating disk info
+    calculateDiskWin();
+    // Refreshing parameters
+    refreshData();
+    
+
+}
