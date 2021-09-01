@@ -1,0 +1,24 @@
+{
+  "name": "static",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client.js",
+  "type": "module",
+  "dependencies": {
+    "@types/socket.io-client": "^3.0.0",
+    "all": "0.0.0",
+    "echarts": "^5.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildts": "tsc -p tsconfig.json",
+    "dev": "parcel views/index.html",
+    "build": "parcel build views/index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.9.4"
+  }
+}
