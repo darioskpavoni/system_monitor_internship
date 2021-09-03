@@ -1,4 +1,514 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const socket_io_client_1 = require("socket.io-client");
+const echarts = __importStar(require("echarts"));
+const socket = (0, socket_io_client_1.io)("ws://192.168.0.231:3001");
+// Creating object to contain all timers used to delete not updated data on page
+let timers = [];
+socket.on("sysData", (sysData) => {
+    if (!timers[sysData.id]) {
+        timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info
+    }
+    timers[sysData.id].push(setTimeout(() => {
+        let e = document.getElementById(`${sysData.id}`);
+        if (e !== null) {
+            e.remove();
+        }
+        console.log(`Deleting node ${sysData.id}`);
+    }, 4000));
+    if (timers[sysData.id].length > 1) {
+        // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one (which was the second originally) gets deleted and cleared, and so on.
+        const t = timers[sysData.id].shift();
+        clearTimeout(t);
+    }
+    /* CHART CONFIGURATION */
+    // CPU CHART
+    const CPUchart_option = {
+        title: {
+            text: "CPU Usage [%]",
+            left: "center",
+        },
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                type: "cross",
+                label: {
+                    backgroundColor: "#6a7985",
+                },
+            },
+        },
+        xAxis: {
+            type: "category",
+            boundaryGap: false,
+        },
+        yAxis: {
+            type: "value",
+            min: 0,
+            max: 100,
+        },
+        series: [
+            {
+                name: "CPU Usage",
+                type: "line",
+                label: {
+                    show: true,
+                    position: "top",
+                },
+                areaStyle: {
+                    color: "#A3D8EC",
+                },
+                data: sysData.CPU_usage,
+            },
+        ],
+    };
+    // RAM CHART
+    const RAMchart_option = {
+        title: {
+            text: "RAM Usage [%]",
+            padding: 0,
+            left: "center",
+            textStyle: {
+                fontSize: 15,
+            },
+        },
+        tooltip: {
+            trigger: "item",
+        },
+        legend: {
+            top: "5%",
+            left: "center",
+        },
+        series: [
+            {
+                name: "RAM Usage",
+                type: "pie",
+                radius: ["40%", "70%"],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: "#fff",
+                    borderWidth: 2,
+                },
+                label: {
+                    show: false,
+                    position: "center",
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: "20",
+                        fontWeight: "bold",
+                    },
+                },
+                labelLine: {
+                    show: false,
+                },
+                data: [
+                    {
+                        value: sysData.RAM_usage[1],
+                        name: `Used`, // If I change this to sysData.RAM_usage[0] to see the actual GBs, the charts starts behaving strangely
+                    },
+                    {
+                        value: sysData.RAM_free[1],
+                        name: `Free`,
+                    },
+                ],
+            },
+        ],
+    };
+    // DISK CHART
+    const DISKchart_option = {
+        title: {
+            text: "Partition Usage [GB]",
+            padding: 0,
+            left: "center",
+            textStyle: {
+                fontSize: 15,
+            },
+        },
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                // Use axis to trigger tooltip
+                type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
+            },
+        },
+        legend: {
+            data: ["Used Space", "Free Space"],
+            top: "5%",
+            left: "center",
+        },
+        grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            containLabel: true,
+        },
+        xAxis: {
+            type: "value",
+        },
+        yAxis: {
+            type: "category",
+            data: [], // !! DONE
+        },
+        series: [
+            {
+                name: "Used Space",
+                type: "bar",
+                stack: "total",
+                label: {
+                    show: true,
+                },
+                emphasis: {
+                    focus: "series",
+                },
+                data: [], // !!
+            },
+            {
+                name: "Free Space",
+                type: "bar",
+                stack: "total",
+                label: {
+                    show: true,
+                },
+                emphasis: {
+                    focus: "series",
+                },
+                data: [], // !!
+            },
+        ],
+    };
+    // Pushing sysData.DISK_used partitions in the disk chart
+    for (let i = 0; i < sysData.DISK_used.length; i++) {
+        DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
+    }
+    for (let i = 0; i < DISKchart_option.series.length; i++) {
+        for (let j = 0; j < sysData.DISK_used.length; j++) {
+            if (i == 0) {
+                DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
+            }
+            else if (i == 1) {
+                DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
+            }
+        }
+    }
+    /* CREATING/UPDATING HTML ELEMENTS */
+    if (!document.getElementById(`${sysData.id}`)) {
+        let container = document.createElement("div");
+        container.classList.add("client");
+        document.body.appendChild(container);
+        container.id = String(sysData.id);
+        // TABLE
+        let table = document.createElement("table");
+        table.classList.add("sysDataTable");
+        container.appendChild(table);
+        let tableHead = document.createElement("thead");
+        table.appendChild(tableHead);
+        tableHead.innerHTML = `<tr>
+        <th scope="col">User ID</th>
+        <th scope="col">CPU Usage</th>
+        <th scope="col">RAM Usage</th>
+        <th scope="col">RAM Free</th>
+        <th scope="col">DISK Usage</th>
+        <th scope="col">DISK Free</th>
+        </tr>`;
+        /* DISK DATA FORMATTING */
+        // Used disk space
+        let usedDisk = "";
+        for (let i = 0; i < sysData.DISK_used.length; i++) {
+            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`; // this is actually the free space
+        }
+        // Free disk space
+        let freeDisk = "";
+        for (let i = 0; i < sysData.DISK_free.length; i++) {
+            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
+        }
+        let tableBody = document.createElement("tbody");
+        table.appendChild(tableBody);
+        let row = document.createElement("tr");
+        row.innerHTML = `<th scope="row">${sysData.id}</th>
+            <td class='CPU'>${sysData.CPU_usage.slice(-1).pop()}%</td>
+            <td class='RAMused'>${sysData.RAM_usage[1]}%</td>
+            <td class='RAMfree'>${sysData.RAM_free[0]}GB</td>
+            <td class='DISKused-container'>${usedDisk}</td>
+            <td class='DISKfree-container'>${freeDisk}</td>`;
+        tableBody.appendChild(row);
+        /* CREATING GRAPH */
+        // Creating container for charts
+        let graphsContainer = document.createElement("div");
+        graphsContainer.classList.add("graphsContainer");
+        /* CPU CHART */
+        let newChart = document.createElement("div");
+        newChart.style.width = "600px";
+        newChart.style.height = "400px";
+        newChart.classList.add("CPUgraph");
+        graphsContainer.appendChild(newChart);
+        container.appendChild(graphsContainer);
+        // based on prepared DOM, initialize echarts instance
+        const htmlCPUchart = document.querySelector(`[id="${sysData.id}"] .CPUgraph`);
+        const CPUchart = echarts.init(htmlCPUchart);
+        // use configuration item and data specified to show chart
+        CPUchart.setOption(CPUchart_option);
+        /* ------------------------------------------ */
+        /* RAM CHART */
+        let newChart2 = document.createElement("div");
+        newChart2.style.width = "300px";
+        newChart2.style.height = "300px";
+        newChart2.classList.add("RAMgraph");
+        let RAM_DISK_container = document.createElement("div");
+        RAM_DISK_container.classList.add("RAMDISKContainer");
+        RAM_DISK_container.appendChild(newChart2);
+        graphsContainer.appendChild(RAM_DISK_container);
+        const htmlRAMchart = document.querySelector(`[id="${sysData.id}"] .RAMgraph`);
+        const RAMchart = echarts.init(htmlRAMchart);
+        /* ------------------------------------------ */
+        /* DISK CHART */
+        let newChart3 = document.createElement("div");
+        newChart3.style.width = "300px";
+        newChart3.style.height = "300px";
+        newChart3.classList.add("DISKgraph");
+        RAM_DISK_container.appendChild(newChart3);
+        const htmlDISKchart = document.querySelector(`[id="${sysData.id}"] .DISKgraph`);
+        const DISKchart = echarts.init(htmlDISKchart);
+        DISKchart_option.yAxis.data = [];
+        for (let i = 0; i < sysData.DISK_used.length; i++) {
+            DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
+        }
+        for (let i = 0; i < DISKchart_option.series.length; i++) {
+            DISKchart_option.series[i].data = [];
+            for (let j = 0; j < sysData.DISK_used.length; j++) {
+                if (i == 0) {
+                    DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
+                }
+                else if (i == 1) {
+                    DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
+                }
+            }
+        }
+        DISKchart.setOption(DISKchart_option);
+    }
+    else if (document.getElementById(`${sysData.id}`)) {
+        let row = document.querySelector(`[id="${sysData.id}"] > table > tbody > tr`);
+        /* DISK DATA FORMATTING for the table row */
+        // Used disk
+        let usedDisk = "";
+        for (let i = 0; i < sysData.DISK_used.length; i++) {
+            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`;
+        }
+        // Free disk
+        let freeDisk = "";
+        for (let i = 0; i < sysData.DISK_free.length; i++) {
+            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
+        }
+        /* -------------------- */
+        /* console.log(sysData.CPU_usage.slice(-1).pop()); */ // This is to get only the last element in the array of values for CPU and so on
+        // Table row update with new data
+        row.innerHTML = `<th scope="row">${sysData.id}</th>
+            <td class='CPUload'>${sysData.CPU_usage.slice(-1).pop()}%</td>
+            <td class='RAMused'>${sysData.RAM_usage[1]}%</td>
+            <td class='RAMfree'>${sysData.RAM_free[0]}GB</td>
+            <td class='DISKused-container'>${usedDisk}</td>
+            <td class='DISKfree-container'>${freeDisk}</td>`;
+        /* UPDATING DATA IN GRAPHS */
+        // CPU CHART
+        const htmlCPUchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`);
+        const CPUchart = echarts.init(htmlCPUchart);
+        CPUchart.setOption(CPUchart_option);
+        // RAM CHART
+        const htmlRAMchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .RAMgraph`);
+        const RAMchart = echarts.init(htmlRAMchart);
+        RAMchart.setOption(RAMchart_option);
+        // DISK CHART
+        const htmlDISKchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .DISKgraph`);
+        const DISKchart = echarts.init(htmlDISKchart);
+        DISKchart_option.yAxis.data = [];
+        for (let i = 0; i < sysData.DISK_used.length; i++) {
+            DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
+        }
+        for (let i = 0; i < DISKchart_option.series.length; i++) {
+            DISKchart_option.series[i].data = [];
+            for (let j = 0; j < sysData.DISK_used.length; j++) {
+                if (i == 0) {
+                    DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
+                }
+                else if (i == 1) {
+                    DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
+                }
+            }
+        }
+        DISKchart.setOption(DISKchart_option);
+    }
+});
+
+},{"echarts":9,"socket.io-client":32}],2:[function(require,module,exports){
+
+/**
+ * Expose `Backoff`.
+ */
+
+module.exports = Backoff;
+
+/**
+ * Initialize backoff timer with `opts`.
+ *
+ * - `min` initial timeout in milliseconds [100]
+ * - `max` max timeout [10000]
+ * - `jitter` [0]
+ * - `factor` [2]
+ *
+ * @param {Object} opts
+ * @api public
+ */
+
+function Backoff(opts) {
+  opts = opts || {};
+  this.ms = opts.min || 100;
+  this.max = opts.max || 10000;
+  this.factor = opts.factor || 2;
+  this.jitter = opts.jitter > 0 && opts.jitter <= 1 ? opts.jitter : 0;
+  this.attempts = 0;
+}
+
+/**
+ * Return the backoff duration.
+ *
+ * @return {Number}
+ * @api public
+ */
+
+Backoff.prototype.duration = function(){
+  var ms = this.ms * Math.pow(this.factor, this.attempts++);
+  if (this.jitter) {
+    var rand =  Math.random();
+    var deviation = Math.floor(rand * this.jitter * ms);
+    ms = (Math.floor(rand * 10) & 1) == 0  ? ms - deviation : ms + deviation;
+  }
+  return Math.min(ms, this.max) | 0;
+};
+
+/**
+ * Reset the number of attempts.
+ *
+ * @api public
+ */
+
+Backoff.prototype.reset = function(){
+  this.attempts = 0;
+};
+
+/**
+ * Set the minimum duration
+ *
+ * @api public
+ */
+
+Backoff.prototype.setMin = function(min){
+  this.ms = min;
+};
+
+/**
+ * Set the maximum duration
+ *
+ * @api public
+ */
+
+Backoff.prototype.setMax = function(max){
+  this.max = max;
+};
+
+/**
+ * Set the jitter
+ *
+ * @api public
+ */
+
+Backoff.prototype.setJitter = function(jitter){
+  this.jitter = jitter;
+};
+
+
+},{}],3:[function(require,module,exports){
+/*
+ * base64-arraybuffer
+ * https://github.com/niklasvh/base64-arraybuffer
+ *
+ * Copyright (c) 2012 Niklas von Hertzen
+ * Licensed under the MIT license.
+ */
+(function(chars){
+  "use strict";
+
+  exports.encode = function(arraybuffer) {
+    var bytes = new Uint8Array(arraybuffer),
+    i, len = bytes.length, base64 = "";
+
+    for (i = 0; i < len; i+=3) {
+      base64 += chars[bytes[i] >> 2];
+      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+      base64 += chars[bytes[i + 2] & 63];
+    }
+
+    if ((len % 3) === 2) {
+      base64 = base64.substring(0, base64.length - 1) + "=";
+    } else if (len % 3 === 1) {
+      base64 = base64.substring(0, base64.length - 2) + "==";
+    }
+
+    return base64;
+  };
+
+  exports.decode =  function(base64) {
+    var bufferLength = base64.length * 0.75,
+    len = base64.length, i, p = 0,
+    encoded1, encoded2, encoded3, encoded4;
+
+    if (base64[base64.length - 1] === "=") {
+      bufferLength--;
+      if (base64[base64.length - 2] === "=") {
+        bufferLength--;
+      }
+    }
+
+    var arraybuffer = new ArrayBuffer(bufferLength),
+    bytes = new Uint8Array(arraybuffer);
+
+    for (i = 0; i < len; i+=4) {
+      encoded1 = chars.indexOf(base64[i]);
+      encoded2 = chars.indexOf(base64[i+1]);
+      encoded3 = chars.indexOf(base64[i+2]);
+      encoded4 = chars.indexOf(base64[i+3]);
+
+      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+
+    return arraybuffer;
+  };
+})("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+
+},{}],4:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -150,7 +660,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],2:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -1931,778 +2441,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"base64-js":1,"buffer":2,"ieee754":3}],3:[function(require,module,exports){
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = (nBytes * 8) - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = ((value * c) - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},{}],4:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],5:[function(require,module,exports){
-"use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const socket_io_client_1 = require("socket.io-client");
-const echarts = __importStar(require("echarts"));
-const socket = socket_io_client_1.io("ws://192.168.0.167:3001");
-// Creating object to contain all timers used to delete not updated data on page
-let timers = [];
-socket.on("sysData", (sysData) => {
-    if (!timers[sysData.id]) {
-        timers[sysData.id] = []; // Creating an array which will contain up to 2 timers at a time for every user. Look down for info
-    }
-    timers[sysData.id].push(setTimeout(() => {
-        let e = document.getElementById(`${sysData.id}`);
-        if (e !== null) {
-            e.remove();
-        }
-        console.log(`Deleting node ${sysData.id}`);
-    }, 4000));
-    if (timers[sysData.id].length > 1) {
-        // Idea is that for every user I have an array of timers. At the beginning I have 0 timers, one is created. Then another one is created. Array length is now 2, I delete the first timer from the array and clear the timer. Then another timer is created and the first one (which was the second originally) gets deleted and cleared, and so on.
-        const t = timers[sysData.id].shift();
-        clearTimeout(t);
-    }
-    /* CHART CONFIGURATION */
-    // CPU CHART
-    const CPUchart_option = {
-        title: {
-            text: "CPU Usage [%]",
-            left: "center",
-        },
-        tooltip: {
-            trigger: "axis",
-            axisPointer: {
-                type: "cross",
-                label: {
-                    backgroundColor: "#6a7985",
-                },
-            },
-        },
-        xAxis: {
-            type: "category",
-            boundaryGap: false,
-        },
-        yAxis: {
-            type: "value",
-            min: 0,
-            max: 100,
-        },
-        series: [
-            {
-                name: "CPU Usage",
-                type: "line",
-                label: {
-                    show: true,
-                    position: "top",
-                },
-                areaStyle: {
-                    color: "#A3D8EC",
-                },
-                data: sysData.CPU_usage,
-            },
-        ],
-    };
-    // RAM CHART
-    const RAMchart_option = {
-        title: {
-            text: "RAM Usage [%]",
-            padding: 0,
-            left: "center",
-            textStyle: {
-                fontSize: 15,
-            },
-        },
-        tooltip: {
-            trigger: "item",
-        },
-        legend: {
-            top: "5%",
-            left: "center",
-        },
-        series: [
-            {
-                name: "RAM Usage",
-                type: "pie",
-                radius: ["40%", "70%"],
-                avoidLabelOverlap: false,
-                itemStyle: {
-                    borderRadius: 10,
-                    borderColor: "#fff",
-                    borderWidth: 2,
-                },
-                label: {
-                    show: false,
-                    position: "center",
-                },
-                emphasis: {
-                    label: {
-                        show: true,
-                        fontSize: "20",
-                        fontWeight: "bold",
-                    },
-                },
-                labelLine: {
-                    show: false,
-                },
-                data: [
-                    {
-                        value: sysData.RAM_usage[1],
-                        name: `Used`,
-                    },
-                    {
-                        value: sysData.RAM_free[1],
-                        name: `Free`,
-                    },
-                ],
-            },
-        ],
-    };
-    // DISK CHART
-    const DISKchart_option = {
-        title: {
-            text: "Partition Usage [GB]",
-            padding: 0,
-            left: "center",
-            textStyle: {
-                fontSize: 15,
-            },
-        },
-        tooltip: {
-            trigger: "axis",
-            axisPointer: {
-                // Use axis to trigger tooltip
-                type: "shadow",
-            },
-        },
-        legend: {
-            data: ["Used Space", "Free Space"],
-            top: "5%",
-            left: "center",
-        },
-        grid: {
-            left: "3%",
-            right: "4%",
-            bottom: "3%",
-            containLabel: true,
-        },
-        xAxis: {
-            type: "value",
-        },
-        yAxis: {
-            type: "category",
-            data: [],
-        },
-        series: [
-            {
-                name: "Used Space",
-                type: "bar",
-                stack: "total",
-                label: {
-                    show: true,
-                },
-                emphasis: {
-                    focus: "series",
-                },
-                data: [],
-            },
-            {
-                name: "Free Space",
-                type: "bar",
-                stack: "total",
-                label: {
-                    show: true,
-                },
-                emphasis: {
-                    focus: "series",
-                },
-                data: [],
-            },
-        ],
-    };
-    // Pushing sysData.DISK_used partitions in the disk chart
-    for (let i = 0; i < sysData.DISK_used.length; i++) {
-        DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-    }
-    for (let i = 0; i < DISKchart_option.series.length; i++) {
-        for (let j = 0; j < sysData.DISK_used.length; j++) {
-            if (i == 0) {
-                DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-            }
-            else if (i == 1) {
-                DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-            }
-        }
-    }
-    /* CREATING/UPDATING HTML ELEMENTS */
-    if (!document.getElementById(`${sysData.id}`)) {
-        let container = document.createElement("div");
-        container.classList.add("client");
-        document.body.appendChild(container);
-        container.id = String(sysData.id);
-        // TABLE
-        let table = document.createElement("table");
-        table.classList.add("sysDataTable");
-        container.appendChild(table);
-        let tableHead = document.createElement("thead");
-        table.appendChild(tableHead);
-        tableHead.innerHTML = `<tr>
-        <th scope="col">User ID</th>
-        <th scope="col">CPU Usage</th>
-        <th scope="col">RAM Usage</th>
-        <th scope="col">RAM Free</th>
-        <th scope="col">DISK Usage</th>
-        <th scope="col">DISK Free</th>
-        </tr>`;
-        /* DISK DATA FORMATTING */
-        // Used disk space
-        let usedDisk = "";
-        for (let i = 0; i < sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`; // this is actually the free space
-        }
-        // Free disk space
-        let freeDisk = "";
-        for (let i = 0; i < sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
-        }
-        let tableBody = document.createElement("tbody");
-        table.appendChild(tableBody);
-        let row = document.createElement("tr");
-        row.innerHTML = `<th scope="row">${sysData.id}</th>
-            <td class='CPU'>${sysData.CPU_usage.slice(-1).pop()}%</td>
-            <td class='RAMused'>${sysData.RAM_usage[1]}%</td>
-            <td class='RAMfree'>${sysData.RAM_free[0]}GB</td>
-            <td class='DISKused-container'>${usedDisk}</td>
-            <td class='DISKfree-container'>${freeDisk}</td>`;
-        tableBody.appendChild(row);
-        /* CREATING GRAPH */
-        // Creating container for charts
-        let graphsContainer = document.createElement("div");
-        graphsContainer.classList.add("graphsContainer");
-        /* CPU CHART */
-        let newChart = document.createElement("div");
-        newChart.style.width = "600px";
-        newChart.style.height = "400px";
-        newChart.classList.add("CPUgraph");
-        graphsContainer.appendChild(newChart);
-        container.appendChild(graphsContainer);
-        // based on prepared DOM, initialize echarts instance
-        const htmlCPUchart = document.querySelector(`[id="${sysData.id}"] .CPUgraph`);
-        const CPUchart = echarts.init(htmlCPUchart);
-        // use configuration item and data specified to show chart
-        CPUchart.setOption(CPUchart_option);
-        /* ------------------------------------------ */
-        /* RAM CHART */
-        let newChart2 = document.createElement("div");
-        newChart2.style.width = "300px";
-        newChart2.style.height = "300px";
-        newChart2.classList.add("RAMgraph");
-        let RAM_DISK_container = document.createElement("div");
-        RAM_DISK_container.classList.add("RAMDISKContainer");
-        RAM_DISK_container.appendChild(newChart2);
-        graphsContainer.appendChild(RAM_DISK_container);
-        const htmlRAMchart = document.querySelector(`[id="${sysData.id}"] .RAMgraph`);
-        const RAMchart = echarts.init(htmlRAMchart);
-        /* ------------------------------------------ */
-        /* DISK CHART */
-        let newChart3 = document.createElement("div");
-        newChart3.style.width = "300px";
-        newChart3.style.height = "300px";
-        newChart3.classList.add("DISKgraph");
-        RAM_DISK_container.appendChild(newChart3);
-        const htmlDISKchart = document.querySelector(`[id="${sysData.id}"] .DISKgraph`);
-        const DISKchart = echarts.init(htmlDISKchart);
-        DISKchart_option.yAxis.data = [];
-        for (let i = 0; i < sysData.DISK_used.length; i++) {
-            DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-        }
-        for (let i = 0; i < DISKchart_option.series.length; i++) {
-            DISKchart_option.series[i].data = [];
-            for (let j = 0; j < sysData.DISK_used.length; j++) {
-                if (i == 0) {
-                    DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-                }
-                else if (i == 1) {
-                    DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-                }
-            }
-        }
-        DISKchart.setOption(DISKchart_option);
-    }
-    else if (document.getElementById(`${sysData.id}`)) {
-        let row = document.querySelector(`[id="${sysData.id}"] > table > tbody > tr`);
-        /* DISK DATA FORMATTING for the table row */
-        // Used disk
-        let usedDisk = "";
-        for (let i = 0; i < sysData.DISK_used.length; i++) {
-            usedDisk += `${sysData.DISK_used[i][0]} ${sysData.DISK_used[i][1]}GB<br>`;
-        }
-        // Free disk
-        let freeDisk = "";
-        for (let i = 0; i < sysData.DISK_free.length; i++) {
-            freeDisk += `${sysData.DISK_free[i][0]} ${sysData.DISK_free[i][1]}GB<br>`;
-        }
-        /* -------------------- */
-        /* console.log(sysData.CPU_usage.slice(-1).pop()); */ // This is to get only the last element in the array of values for CPU and so on
-        // Table row update with new data
-        row.innerHTML = `<th scope="row">${sysData.id}</th>
-            <td class='CPUload'>${sysData.CPU_usage.slice(-1).pop()}%</td>
-            <td class='RAMused'>${sysData.RAM_usage[1]}%</td>
-            <td class='RAMfree'>${sysData.RAM_free[0]}GB</td>
-            <td class='DISKused-container'>${usedDisk}</td>
-            <td class='DISKfree-container'>${freeDisk}</td>`;
-        /* UPDATING DATA IN GRAPHS */
-        // CPU CHART
-        const htmlCPUchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`);
-        const CPUchart = echarts.init(htmlCPUchart);
-        CPUchart.setOption(CPUchart_option);
-        // RAM CHART
-        const htmlRAMchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .RAMgraph`);
-        const RAMchart = echarts.init(htmlRAMchart);
-        RAMchart.setOption(RAMchart_option);
-        // DISK CHART
-        const htmlDISKchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .DISKgraph`);
-        const DISKchart = echarts.init(htmlDISKchart);
-        DISKchart_option.yAxis.data = [];
-        for (let i = 0; i < sysData.DISK_used.length; i++) {
-            DISKchart_option.yAxis.data.push(sysData.DISK_used[i][0]);
-        }
-        for (let i = 0; i < DISKchart_option.series.length; i++) {
-            DISKchart_option.series[i].data = [];
-            for (let j = 0; j < sysData.DISK_used.length; j++) {
-                if (i == 0) {
-                    DISKchart_option.series[i].data.push(sysData.DISK_used[j][1]);
-                }
-                else if (i == 1) {
-                    DISKchart_option.series[i].data.push(sysData.DISK_free[j][1]);
-                }
-            }
-        }
-        DISKchart.setOption(DISKchart_option);
-    }
-});
-
-},{"echarts":11,"socket.io-client":32}],6:[function(require,module,exports){
-
-/**
- * Expose `Backoff`.
- */
-
-module.exports = Backoff;
-
-/**
- * Initialize backoff timer with `opts`.
- *
- * - `min` initial timeout in milliseconds [100]
- * - `max` max timeout [10000]
- * - `jitter` [0]
- * - `factor` [2]
- *
- * @param {Object} opts
- * @api public
- */
-
-function Backoff(opts) {
-  opts = opts || {};
-  this.ms = opts.min || 100;
-  this.max = opts.max || 10000;
-  this.factor = opts.factor || 2;
-  this.jitter = opts.jitter > 0 && opts.jitter <= 1 ? opts.jitter : 0;
-  this.attempts = 0;
-}
-
-/**
- * Return the backoff duration.
- *
- * @return {Number}
- * @api public
- */
-
-Backoff.prototype.duration = function(){
-  var ms = this.ms * Math.pow(this.factor, this.attempts++);
-  if (this.jitter) {
-    var rand =  Math.random();
-    var deviation = Math.floor(rand * this.jitter * ms);
-    ms = (Math.floor(rand * 10) & 1) == 0  ? ms - deviation : ms + deviation;
-  }
-  return Math.min(ms, this.max) | 0;
-};
-
-/**
- * Reset the number of attempts.
- *
- * @api public
- */
-
-Backoff.prototype.reset = function(){
-  this.attempts = 0;
-};
-
-/**
- * Set the minimum duration
- *
- * @api public
- */
-
-Backoff.prototype.setMin = function(min){
-  this.ms = min;
-};
-
-/**
- * Set the maximum duration
- *
- * @api public
- */
-
-Backoff.prototype.setMax = function(max){
-  this.max = max;
-};
-
-/**
- * Set the jitter
- *
- * @api public
- */
-
-Backoff.prototype.setJitter = function(jitter){
-  this.jitter = jitter;
-};
-
-
-},{}],7:[function(require,module,exports){
-/*
- * base64-arraybuffer
- * https://github.com/niklasvh/base64-arraybuffer
- *
- * Copyright (c) 2012 Niklas von Hertzen
- * Licensed under the MIT license.
- */
-(function(chars){
-  "use strict";
-
-  exports.encode = function(arraybuffer) {
-    var bytes = new Uint8Array(arraybuffer),
-    i, len = bytes.length, base64 = "";
-
-    for (i = 0; i < len; i+=3) {
-      base64 += chars[bytes[i] >> 2];
-      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
-      base64 += chars[bytes[i + 2] & 63];
-    }
-
-    if ((len % 3) === 2) {
-      base64 = base64.substring(0, base64.length - 1) + "=";
-    } else if (len % 3 === 1) {
-      base64 = base64.substring(0, base64.length - 2) + "==";
-    }
-
-    return base64;
-  };
-
-  exports.decode =  function(base64) {
-    var bufferLength = base64.length * 0.75,
-    len = base64.length, i, p = 0,
-    encoded1, encoded2, encoded3, encoded4;
-
-    if (base64[base64.length - 1] === "=") {
-      bufferLength--;
-      if (base64[base64.length - 2] === "=") {
-        bufferLength--;
-      }
-    }
-
-    var arraybuffer = new ArrayBuffer(bufferLength),
-    bytes = new Uint8Array(arraybuffer);
-
-    for (i = 0; i < len; i+=4) {
-      encoded1 = chars.indexOf(base64[i]);
-      encoded2 = chars.indexOf(base64[i+1]);
-      encoded3 = chars.indexOf(base64[i+2]);
-      encoded4 = chars.indexOf(base64[i+3]);
-
-      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
-    }
-
-    return arraybuffer;
-  };
-})("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
-
-},{}],8:[function(require,module,exports){
+},{"base64-js":4,"buffer":5,"ieee754":27}],6:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -2879,7 +2618,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (process){(function (){
 /* eslint-env browser */
 
@@ -3152,7 +2891,7 @@ formatters.j = function (v) {
 };
 
 }).call(this)}).call(this,require('_process'))
-},{"./common":10,"_process":4}],10:[function(require,module,exports){
+},{"./common":8,"_process":31}],8:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -3428,7 +3167,7 @@ function setup(env) {
 
 module.exports = setup;
 
-},{"ms":29}],11:[function(require,module,exports){
+},{"ms":28}],9:[function(require,module,exports){
 (function (process,global){(function (){
 
 /*
@@ -95150,7 +94889,7 @@ module.exports = setup;
 
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":4}],12:[function(require,module,exports){
+},{"_process":31}],10:[function(require,module,exports){
 module.exports = (() => {
   if (typeof self !== "undefined") {
     return self;
@@ -95161,7 +94900,7 @@ module.exports = (() => {
   }
 })();
 
-},{}],13:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const Socket = require("./socket");
 
 module.exports = (uri, opts) => new Socket(uri, opts);
@@ -95177,7 +94916,7 @@ module.exports.Transport = require("./transport");
 module.exports.transports = require("./transports/index");
 module.exports.parser = require("engine.io-parser");
 
-},{"./socket":14,"./transport":15,"./transports/index":16,"engine.io-parser":27}],14:[function(require,module,exports){
+},{"./socket":12,"./transport":13,"./transports/index":14,"engine.io-parser":25}],12:[function(require,module,exports){
 const transports = require("./transports/index");
 const Emitter = require("component-emitter");
 const debug = require("debug")("engine.io-client:socket");
@@ -95865,7 +95604,7 @@ function clone(obj) {
 
 module.exports = Socket;
 
-},{"./transports/index":16,"./util":22,"component-emitter":8,"debug":9,"engine.io-parser":27,"parseqs":30,"parseuri":31}],15:[function(require,module,exports){
+},{"./transports/index":14,"./util":20,"component-emitter":6,"debug":7,"engine.io-parser":25,"parseqs":29,"parseuri":30}],13:[function(require,module,exports){
 const parser = require("engine.io-parser");
 const Emitter = require("component-emitter");
 const { installTimerFunctions } = require("./util");
@@ -95988,7 +95727,7 @@ class Transport extends Emitter {
 
 module.exports = Transport;
 
-},{"./util":22,"component-emitter":8,"debug":9,"engine.io-parser":27}],16:[function(require,module,exports){
+},{"./util":20,"component-emitter":6,"debug":7,"engine.io-parser":25}],14:[function(require,module,exports){
 const XMLHttpRequest = require("xmlhttprequest-ssl");
 const XHR = require("./polling-xhr");
 const JSONP = require("./polling-jsonp");
@@ -96035,7 +95774,7 @@ function polling(opts) {
   }
 }
 
-},{"./polling-jsonp":17,"./polling-xhr":18,"./websocket":21,"xmlhttprequest-ssl":23}],17:[function(require,module,exports){
+},{"./polling-jsonp":15,"./polling-xhr":16,"./websocket":19,"xmlhttprequest-ssl":21}],15:[function(require,module,exports){
 const Polling = require("./polling");
 const globalThis = require("../globalThis");
 
@@ -96232,7 +95971,7 @@ class JSONPPolling extends Polling {
 
 module.exports = JSONPPolling;
 
-},{"../globalThis":12,"./polling":19}],18:[function(require,module,exports){
+},{"../globalThis":10,"./polling":17}],16:[function(require,module,exports){
 /* global attachEvent */
 
 const XMLHttpRequest = require("xmlhttprequest-ssl");
@@ -96567,7 +96306,7 @@ function unloadHandler() {
 module.exports = XHR;
 module.exports.Request = Request;
 
-},{"../globalThis":12,"../util":22,"./polling":19,"component-emitter":8,"debug":9,"xmlhttprequest-ssl":23}],19:[function(require,module,exports){
+},{"../globalThis":10,"../util":20,"./polling":17,"component-emitter":6,"debug":7,"xmlhttprequest-ssl":21}],17:[function(require,module,exports){
 const Transport = require("../transport");
 const parseqs = require("parseqs");
 const parser = require("engine.io-parser");
@@ -96774,7 +96513,7 @@ class Polling extends Transport {
 
 module.exports = Polling;
 
-},{"../transport":15,"debug":9,"engine.io-parser":27,"parseqs":30,"yeast":41}],20:[function(require,module,exports){
+},{"../transport":13,"debug":7,"engine.io-parser":25,"parseqs":29,"yeast":41}],18:[function(require,module,exports){
 const globalThis = require("../globalThis");
 const nextTick = (() => {
   const isPromiseAvailable =
@@ -96793,7 +96532,7 @@ module.exports = {
   nextTick
 };
 
-},{"../globalThis":12}],21:[function(require,module,exports){
+},{"../globalThis":10}],19:[function(require,module,exports){
 (function (Buffer){(function (){
 const Transport = require("../transport");
 const parser = require("engine.io-parser");
@@ -97053,7 +96792,7 @@ class WS extends Transport {
 module.exports = WS;
 
 }).call(this)}).call(this,require("buffer").Buffer)
-},{"../transport":15,"../util":22,"./websocket-constructor":20,"buffer":2,"debug":9,"engine.io-parser":27,"parseqs":30,"yeast":41}],22:[function(require,module,exports){
+},{"../transport":13,"../util":20,"./websocket-constructor":18,"buffer":5,"debug":7,"engine.io-parser":25,"parseqs":29,"yeast":41}],20:[function(require,module,exports){
 const globalThis = require("./globalThis");
 
 module.exports.pick = (obj, ...attr) => {
@@ -97079,7 +96818,7 @@ module.exports.installTimerFunctions = (obj, opts) => {
   }
 };
 
-},{"./globalThis":12}],23:[function(require,module,exports){
+},{"./globalThis":10}],21:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 const hasCORS = require("has-cors");
@@ -97121,7 +96860,7 @@ module.exports = function(opts) {
   }
 };
 
-},{"./globalThis":12,"has-cors":28}],24:[function(require,module,exports){
+},{"./globalThis":10,"has-cors":26}],22:[function(require,module,exports){
 const PACKET_TYPES = Object.create(null); // no Map = no polyfill
 PACKET_TYPES["open"] = "0";
 PACKET_TYPES["close"] = "1";
@@ -97144,7 +96883,7 @@ module.exports = {
   ERROR_PACKET
 };
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 const { PACKET_TYPES_REVERSE, ERROR_PACKET } = require("./commons");
 
 const withNativeArrayBuffer = typeof ArrayBuffer === "function";
@@ -97203,7 +96942,7 @@ const mapBinary = (data, binaryType) => {
 
 module.exports = decodePacket;
 
-},{"./commons":24,"base64-arraybuffer":7}],26:[function(require,module,exports){
+},{"./commons":22,"base64-arraybuffer":3}],24:[function(require,module,exports){
 const { PACKET_TYPES } = require("./commons");
 
 const withNativeBlob =
@@ -97251,7 +96990,7 @@ const encodeBlobAsBase64 = (data, callback) => {
 
 module.exports = encodePacket;
 
-},{"./commons":24}],27:[function(require,module,exports){
+},{"./commons":22}],25:[function(require,module,exports){
 const encodePacket = require("./encodePacket");
 const decodePacket = require("./decodePacket");
 
@@ -97295,7 +97034,7 @@ module.exports = {
   decodePayload
 };
 
-},{"./decodePacket":25,"./encodePacket":26}],28:[function(require,module,exports){
+},{"./decodePacket":23,"./encodePacket":24}],26:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -97314,7 +97053,94 @@ try {
   module.exports = false;
 }
 
-},{}],29:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = (nBytes * 8) - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = ((value * c) - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],28:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -97478,7 +97304,7 @@ function plural(ms, msAbs, n, name) {
   return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
 }
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Compiles a querystring
  * Returns string representation of the object
@@ -97517,7 +97343,7 @@ exports.decode = function(qs){
   return qry;
 };
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -97586,6 +97412,192 @@ function queryKey(uri, query) {
 
     return data;
 }
+
+},{}],31:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 },{}],32:[function(require,module,exports){
 "use strict";
@@ -97660,7 +97672,7 @@ var socket_1 = require("./socket");
 Object.defineProperty(exports, "Socket", { enumerable: true, get: function () { return socket_1.Socket; } });
 exports.default = lookup;
 
-},{"./manager":33,"./socket":35,"./url":37,"debug":9,"socket.io-parser":39}],33:[function(require,module,exports){
+},{"./manager":33,"./socket":35,"./url":37,"debug":7,"socket.io-parser":39}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Manager = void 0;
@@ -98040,7 +98052,7 @@ class Manager extends typed_events_1.StrictEventEmitter {
 }
 exports.Manager = Manager;
 
-},{"./on":34,"./socket":35,"./typed-events":36,"backo2":6,"debug":9,"engine.io-client":13,"engine.io-client/lib/util":22,"socket.io-parser":39}],34:[function(require,module,exports){
+},{"./on":34,"./socket":35,"./typed-events":36,"backo2":2,"debug":7,"engine.io-client":11,"engine.io-client/lib/util":20,"socket.io-parser":39}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.on = void 0;
@@ -98509,7 +98521,7 @@ class Socket extends typed_events_1.StrictEventEmitter {
 }
 exports.Socket = Socket;
 
-},{"./on":34,"./typed-events":36,"debug":9,"socket.io-parser":39}],36:[function(require,module,exports){
+},{"./on":34,"./typed-events":36,"debug":7,"socket.io-parser":39}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StrictEventEmitter = void 0;
@@ -98583,7 +98595,7 @@ class StrictEventEmitter extends Emitter {
 }
 exports.StrictEventEmitter = StrictEventEmitter;
 
-},{"component-emitter":8}],37:[function(require,module,exports){
+},{"component-emitter":6}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.url = void 0;
@@ -98651,7 +98663,7 @@ function url(uri, path = "", loc) {
 }
 exports.url = url;
 
-},{"debug":9,"parseuri":31}],38:[function(require,module,exports){
+},{"debug":7,"parseuri":30}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reconstructPacket = exports.deconstructPacket = void 0;
@@ -99015,7 +99027,7 @@ class BinaryReconstructor {
     }
 }
 
-},{"./binary":38,"./is-binary":40,"component-emitter":8,"debug":9}],40:[function(require,module,exports){
+},{"./binary":38,"./is-binary":40,"component-emitter":6,"debug":7}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hasBinary = exports.isBinary = void 0;
@@ -99142,4 +99154,4 @@ yeast.encode = encode;
 yeast.decode = decode;
 module.exports = yeast;
 
-},{}]},{},[5]);
+},{}]},{},[1]);
