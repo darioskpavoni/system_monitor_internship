@@ -206,7 +206,7 @@ socket.on("sysData", (sysData: IsysData) => {
         }
     }
 
-    /* CREATING/UPDATING HTML ELEMENTS */
+    /* CREATING HTML ELEMENTS */
     if (!document.getElementById(`${sysData.id}`)) {
         let container = document.createElement("div");
         container.classList.add("client");

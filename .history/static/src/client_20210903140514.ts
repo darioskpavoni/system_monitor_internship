@@ -206,14 +206,14 @@ socket.on("sysData", (sysData: IsysData) => {
         }
     }
 
-    /* CREATING/UPDATING HTML ELEMENTS */
+    /* CREATING HTML ELEMENTS */
+    // TABLE
     if (!document.getElementById(`${sysData.id}`)) {
         let container = document.createElement("div");
         container.classList.add("client");
         document.body.appendChild(container);
         container.id = String(sysData.id);
     
-        // TABLE
         let table = document.createElement("table");
         table.classList.add("sysDataTable");
         container.appendChild(table);

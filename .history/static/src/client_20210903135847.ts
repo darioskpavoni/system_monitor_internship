@@ -206,14 +206,14 @@ socket.on("sysData", (sysData: IsysData) => {
         }
     }
 
-    /* CREATING/UPDATING HTML ELEMENTS */
+    /* CREATING HTML ELEMENTS */
+    // TABLE
     if (!document.getElementById(`${sysData.id}`)) {
         let container = document.createElement("div");
         container.classList.add("client");
         document.body.appendChild(container);
         container.id = String(sysData.id);
     
-        // TABLE
         let table = document.createElement("table");
         table.classList.add("sysDataTable");
         container.appendChild(table);
@@ -319,7 +319,7 @@ socket.on("sysData", (sysData: IsysData) => {
           `[id="${sysData.id}"] > table > tbody > tr`
         )! as HTMLElement;
     
-        /* DISK DATA FORMATTING for the table row */
+        /* DISK DATA FORMATTING */
         // Used disk
         let usedDisk = "";
         for (let i = 0; i < sysData.DISK_used.length; i++) {
@@ -342,10 +342,11 @@ socket.on("sysData", (sysData: IsysData) => {
             <td class='DISKused-container'>${usedDisk}</td>
             <td class='DISKfree-container'>${freeDisk}</td>`;
     
-        /* UPDATING DATA IN GRAPHS */
+        // UPDATING DATA IN GRAPHS
         // CPU CHART
         const htmlCPUchart = document.querySelector(`[id="${sysData.id}"] .graphsContainer .CPUgraph`)! as HTMLElement;
         const CPUchart = echarts.init(htmlCPUchart);
+    
         CPUchart.setOption(CPUchart_option);
         // RAM CHART
         const htmlRAMchart =  document.querySelector(`[id="${sysData.id}"] .graphsContainer .RAMgraph`)! as HTMLElement;
