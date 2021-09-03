@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_io_client_1 = __importDefault(require("socket.io-client"));
 const child_process_1 = require("child_process");
 const os_utils_1 = require("os-utils");
-const socket = socket_io_client_1.default("http://192.168.0.231:3001");
+const socket = socket_io_client_1.default("http://192.168.0.167:3001");
 /* IDENTIFY CURRENT OS */
 const isWin = process.platform === "win32";
 const isLinux = process.platform === "linux";
